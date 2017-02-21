@@ -7,7 +7,7 @@ no guarantees.
 Until I release the toolkit, there's really nothing to see here other than some dependency files and maybe the toolkit file 
 for my testing purposes.
 
-As of now the toolkit will be Windows only since its the OS I use. I probably won't ever make a Linux/Max version as I have very
+As of now the toolkit will be Windows only since its the OS I use. I probably won't ever make a Linux/Mac version as I have very
 limited experience with SH scripts. You will probably still be able to run this program with a Windows emulator though.
 
 Planned features:
