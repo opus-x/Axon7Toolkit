@@ -1,8 +1,8 @@
 IF EXIST Temp.txt GOTO DOWNLOAD
-IF EXIST Updater.exe DEL Updater.exe
-wget\bin\wget --no-check-certificate https://github.com/bennykor/Axon7Tool/raw/master/Updater.exe
-IF EXIST Updater.exe echo Update >>Temp.txt & start Updater & exit
-IF NOT EXIST Updater.exe notifu.exe /t error /d 3 /p "Axon7Toolkit" /m "Failed! No connection!" & exit
+IF EXIST Updater.bat DEL Updater.bat
+wget\bin\wget --no-check-certificate https://github.com/bennykor/Axon7Tool/raw/master/Updater.bat
+IF EXIST Updater.bat echo Update >>Temp.txt & start Updater & exit
+IF NOT EXIST Updater.bat notifu.exe /t error /d 3 /p "Axon7Toolkit" /m "Failed! No connection!" & exit
 :DOWNLOAD
 notifu.exe /t info /d 3 /p "Axon7Toolkit" /m "Downloading any updates to toolkit and file dependencies..."
 :TWRP 
