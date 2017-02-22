@@ -2,6 +2,7 @@
 IF EXIST Temp.txt GOTO DOWNLOAD
 IF EXIST Updater.bat DEL Updater.bat
 wget\bin\wget --no-check-certificate https://github.com/bennykor/Axon7Tool/raw/master/Updater.bat
+rename Updater.bat.txt Updater.bat
 IF EXIST Updater.bat echo Update >>Temp.txt & start Updater & exit
 IF NOT EXIST Updater.bat notifu.exe /t error /d 3 /p "Axon7Toolkit" /m "Failed! No connection!" & exit
 :DOWNLOAD
