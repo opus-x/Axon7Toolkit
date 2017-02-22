@@ -1,3 +1,4 @@
+@echo off
 IF EXIST Temp.txt GOTO DOWNLOAD
 IF EXIST Updater.bat DEL Updater.bat
 wget\bin\wget --no-check-certificate https://github.com/bennykor/Axon7Tool/raw/master/Updater.bat
