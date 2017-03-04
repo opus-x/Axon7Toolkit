@@ -22,7 +22,7 @@ echo 5-B29
 echo 6-B15_N
 echo 7-Custom
 echo(
-set /p build=Choose the build you are on(1-7) :  
+set /p build=Choose the build you are on(1-7):  
 if {%build%}=={1} (echo B18 >>build.txt) & (GOTO SETTHEME)
 if {%build%}=={2} (echo B20 >>build.txt) & (GOTO SETTHEME)
 if {%build%}=={3} (echo B20_boot >>build.txt) & (GOTO SETTHEME)
@@ -44,7 +44,7 @@ echo 4-Aqua
 echo 5-Red
 echo 6-Purple
 echo(
-set /p theme=Choose a theme(1-6) or press enter for default :
+set /p theme=Choose a theme(1-6) or press enter for default:
 if {%theme%}=={1} (echo color 0f >>theme.txt) & (%theme%) & (echo Theme set successfully) & (GOTO OPTIONS)
 if {%theme%}=={2} (echo color 1f >>theme.txt) & (%theme%) & (echo Theme set successfully) & (GOTO OPTIONS)
 if {%theme%}=={3} (echo color 2f >>theme.txt) & (%theme%) & (echo Theme set successfully) & (GOTO OPTIONS)
