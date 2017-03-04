@@ -57,7 +57,7 @@ echo Theme set successfully
 cls
 :OPTIONS
 cd C:\Program Files\Axon7Toolkit\bin
-IF NOTE EXIST debuggingprompt.txt cscript popup.vbs "USB Debugging must be enabled before choosing any of the options! If not enabled go to Settings, About Phone, and tap on build number 7 times to enable developer options. Then turn on USB Debugging in developer options."
+IF NOT EXIST debuggingprompt.txt cscript popup.vbs "USB Debugging must be enabled before choosing any of the options! If not enabled go to Settings, About Phone, and tap on build number 7 times to enable developer options. Then turn on USB Debugging in developer options."
 echo                OPTIONS
 echo 1-Driver Installation/Test
 echo 2-Backup apps+data (ADB)
@@ -134,5 +134,14 @@ echo(
 cscript popup.vbs "Use this option along with the restore to stock option if you need to send your phone in for warranty or reselling purposes or just want to have your phone just like it was out of the box. YOU MUST BE COMPLETELY STOCK TO USE THIS OPTION OTHERWISE YOUR PHONE WILL BE BRICKED!"
 echo(
 echo Checking ADB/Fastboot Connectivity...
+:acheck3
+set adbfail=List of devices attached
+for /f "delims=" %%a in ('adb devices') do set output=%%a
+if "%output%" == "%adbfail%" (GOTO fcheck3) else (ADB device connected!) & (ping localhost -n 2 >nul) & (echo( ) & (echo Rebooting to bootloader...) & (adb reboot-bootloader) & (ping localhost -n 10 >nul) & (GOTO acheck3)
+:fcheck3
+set fastfail=
+for /f "delims" %%a in ('fastboot devices') do set output=%%a
+if "%output%" == "%fastfail%" (cscript popup.vbs "Fastboot device is not connected. If your device is already in bootloader mode, try reinstalling the drivers or plugging your device into a different USB port with the OEM cable. You can also manually reboot to bootloader from recovery by choosing "Reboot to bootloader" in stock recovery with the volume down and power keys.") & (pause) & (GOTO acheck3) else (echo( ) & (echo Locking...) & (fastboot oem lock) & (echo( ) & (echo Done! Press any key to return to options...") & (pause 1 >nul) & (GOTO OPTIONS)
+
 
 
