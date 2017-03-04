@@ -10,7 +10,7 @@ cd C:\Program Files\Axon7Toolkit\stored
 set /p theme=<theme.txt
 set /p build=<build.txt
 %theme%
-echo Build successfully set to %build%
+START CMD /C "@echo off & mode con cols=80 lines=2 & set /p build=<build.txt & echo Build successfully set to %build% & ping localhost -n 2 >nul
 GOTO OPTIONS
 :SETBUILD
 echo(
@@ -53,7 +53,7 @@ if {%theme%}=={5} (echo color 4f >>theme.txt) & (%theme%) & (echo Theme set succ
 if {%theme%}=={6} (echo color 5f >>theme.txt) & (%theme%) & (echo Theme set successfully) & (GOTO OPTIONS)
 echo color 1f >>theme.txt
 %theme%
-echo Theme set successfully
+START CMD /C "@echo off & mode con cols=80 lines=2 & set /p theme=<build.txt & echo Theme set successfully & ping localhost -n 2 >nul
 cls
 :OPTIONS
 cd C:\Program Files\Axon7Toolkit\bin
@@ -70,7 +70,6 @@ echo 8-Restore to stock (hardbrick-EDL mode)
 echo 9-Flash zip(s)
 echo 10-Advanced Options
 echo 11-Settings
-
 echo(
 set /p option=Enter an option(1-11) :
 if {%option%}=={1} (start DriverIT.exe) & (GOTO OPTIONS)
