@@ -57,6 +57,7 @@ echo Theme set successfully
 cls
 :OPTIONS
 cd C:\Program Files\Axon7Toolkit\bin
+IF NOTE EXIST debuggingprompt.txt cscript popup.vbs "USB Debugging must be enabled before choosing any of the options! If not enabled go to Settings, About Phone, and tap on build number 7 times to enable developer options. Then turn on USB Debugging in developer options."
 echo                OPTIONS
 echo 1-Driver Installation/Test
 echo 2-Backup apps+data (ADB)
@@ -69,11 +70,7 @@ echo 8-Restore to stock (hardbrick-EDL mode)
 echo 9-Flash zip(s)
 echo 10-Advanced Options
 echo 11-Settings
-echo(
-echo USB DEBUGGING MUST BE ENABLED BEFORE CHOOSING ANY OF THE OPTIONS!
-echo IF NOT ENABLED GO TO SETTINGS, ABOUT PHONE, AND TAP BUILD NUMBER
-echo 7 TIMES TO ENABLE DEVELOPER OPTIONS. THEN TURN ON USB DEBUGGING
-echo IN DEVELOPER OPTIONS.
+
 echo(
 set /p option=Enter an option(1-11) :
 if {%option%}=={1} (start DriverIT.exe) & (GOTO OPTIONS)
@@ -90,5 +87,52 @@ if {%option%}=={11} (start Settings.exe) & (GOTO OPTIONS)
 echo(
 echo INVALID ENTRY! PLEASE ENTER A VALID OPTION!
 GOTO OPTIONS
+:BACKUP
+:acheck2
+echo(
+echo Checking ADB Connectivity...
+set adbfail=List of devices attached
+for /f "delims=" %%a in ('adb devices') do set output=%%a
+if "%output%" == "%adbfail%" (cscript popup.vbs "Device was not detected! Please make sure your device is plugged in, the drivers are installed, and USB debugging is enabled in developer options. If nothing is working try plugging your device into a different USB port(preferably 2.0) or replugging it in with the OEM cable.") & (pause) & (GOTO acheck2)
+echo(
+echo Device connected!
+ping localhost -n 2 >nul
+cscript popup.vbs "A screen will pop up on your device before the backup asking to allow backup to this computer. Enter a password if you want to encrypt the backup and then press Backup"
+echo(
+for /f %%a in ('powershell -Command "Get-Date -format yyyy_MM_dd__HH_mm_ss"') do set datetime=%%a
+cd C:\Program Files\Axon7Toolkit\backups
+echo(
+echo Backing up...
+adb backup -f backup-%datetime%.ab -apk -all
+echo(
+echo Press any key to return to options when backup is finished...
+pause 1 >nul
+GOTO OPTIONS
+:RESTORE
+:acheck3
+echo(
+echo Checking ADB Connectivity...
+set adbfail=List of devices attached
+for /f "delims=" %%a in ('adb devices') do set output=%%a
+if "%output%" == "%adbfail%" (cscript popup.vbs "Device was not detected! Please make sure your device is plugged in, the drivers are installed, and USB debugging is enabled in developer options. If nothing is working try plugging your device into a different USB port(preferably 2.0) or replugging it in with the OEM cable.") & (pause) & (GOTO acheck3)
+echo(
+echo Device connected!
+ping localhost -n 2 >nul
+cscript popup.vbs "A Browse window will now open for you to select a backup to restore to"
+rem BrowseFiles ab C:\Program Files\Axon7Toolkit\backups
+cscript popup.vbs "A screen will pop up on your device before the restore asking to allow restore from this computer. Enter a password if you encrypted the backup and then press Restore"
+cd C:\Program Files\Axon7Toolkit\backups
+echo(
+echo Restoring...
+adb restore %result%
+echo(
+echo Press any key to return to options when restore is finished...
+pause 1 >nul
+GOTO OPTIONS
+:LOCK
+echo(
+cscript popup.vbs "Use this option along with the restore to stock option if you need to send your phone in for warranty or reselling purposes or just want to have your phone just like it was out of the box. YOU MUST BE COMPLETELY STOCK TO USE THIS OPTION OTHERWISE YOUR PHONE WILL BE BRICKED!"
+echo(
+echo Checking ADB/Fastboot Connectivity...
 
 
