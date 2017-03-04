@@ -53,7 +53,7 @@ if {%theme%}=={5} (echo color 4f >>theme.txt) & (%theme%) & (echo Theme set succ
 if {%theme%}=={6} (echo color 5f >>theme.txt) & (%theme%) & (echo Theme set successfully) & (GOTO OPTIONS)
 echo color 1f >>theme.txt
 %theme%
-START CMD /C "@echo off & mode con cols=80 lines=2 & set /p theme=<build.txt & echo Theme set successfully & ping localhost -n 2 >nul
+START CMD /C "@echo off & mode con cols=80 lines=4 & title Information & color f0 & set /p theme=<build.txt & echo( & echo( echo                             Theme set successfully & ping localhost -n 2 >nul
 cls
 :OPTIONS
 cd C:\Program Files\Axon7Toolkit\bin
@@ -96,7 +96,11 @@ if "%output%" == "%adbfail%" (cscript popup.vbs "Device was not detected! Please
 echo(
 start cmd /c "@echo off & mode con cols=80 lines=2 & echo Device connected! & ping localhost -n 5 >nul"
 cscript popup.vbs "A screen will pop up on your device before the backup asking to allow backup to this computer. Enter a password if you want to encrypt the backup and then press Backup"
-start cmd /c "@echo off & mode con cols=80 lines=2 & echo Backing up..." & for /f %%a in ('powershell -Command "Get-Date -format yyyy_MM_dd__HH_mm_ss"') do set datetime=%%a & cd C:\Program Files\Axon7Toolkit\backups & adb backup -f backup-%datetime%.ab -apk -all"
+for /f %%a in ('powershell -Command "Get-Date -format yyyy_MM_dd__HH_mm_ss"') do set datetime=%%a 
+IF EXIST datetime.txt DEL datetime.txt
+echo %datetime% >>datetime.txt
+cd C:\Program Files\Axon7Toolkit\backups
+start cmd /c "@echo off & mode con cols=80 lines=2 & title Information & set /p datetime=<datetime.txt & echo                         Backing up... &  adb backup -f backup-%datetime%.ab -apk -all & DEL datetime.txt"
 echo(
 echo Press any key to return to options...
 pause 1 >nul
@@ -104,7 +108,7 @@ GOTO OPTIONS
 :RESTORE
 :acheck3
 echo(
-echo Checking ADB Connectivity...
+start cmd /c "@echo off & mode con cols=80 lines=4 & color f0 & title Information & echo( & echo( & echo                         Checking ADB Connectivity... & ping localhost -n 5 >nul"
 set adbfail=List of devices attached
 for /f "delims=" %%a in ('adb devices') do set output=%%a
 if "%output%" == "%adbfail%" (cscript popup.vbs "Device was not detected! Please make sure your device is plugged in, the drivers are installed, and USB debugging is enabled in developer options. If nothing is working try plugging your device into a different USB port(preferably 2.0) or replugging it in with the OEM cable.") & (pause) & (GOTO acheck3)
