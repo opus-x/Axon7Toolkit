@@ -89,22 +89,16 @@ GOTO OPTIONS
 :BACKUP
 :acheck2
 echo(
-echo Checking ADB Connectivity...
+START CMD /C "@echo off & mode con cols=80 lines=2 & echo Checking ADB Connectivity... & ping localhost -n 5 >nul"
 set adbfail=List of devices attached
 for /f "delims=" %%a in ('adb devices') do set output=%%a
 if "%output%" == "%adbfail%" (cscript popup.vbs "Device was not detected! Please make sure your device is plugged in, the drivers are installed, and USB debugging is enabled in developer options. If nothing is working try plugging your device into a different USB port(preferably 2.0) or replugging it in with the OEM cable.") & (pause) & (GOTO acheck2)
 echo(
-echo Device connected!
-ping localhost -n 2 >nul
+start cmd /c "@echo off & mode con cols=80 lines=2 & echo Device connected! & ping localhost -n 5 >nul"
 cscript popup.vbs "A screen will pop up on your device before the backup asking to allow backup to this computer. Enter a password if you want to encrypt the backup and then press Backup"
+start cmd /c "@echo off & mode con cols=80 lines=2 & echo Backing up..." & for /f %%a in ('powershell -Command "Get-Date -format yyyy_MM_dd__HH_mm_ss"') do set datetime=%%a & cd C:\Program Files\Axon7Toolkit\backups & adb backup -f backup-%datetime%.ab -apk -all"
 echo(
-for /f %%a in ('powershell -Command "Get-Date -format yyyy_MM_dd__HH_mm_ss"') do set datetime=%%a
-cd C:\Program Files\Axon7Toolkit\backups
-echo(
-echo Backing up...
-adb backup -f backup-%datetime%.ab -apk -all
-echo(
-echo Press any key to return to options when backup is finished...
+echo Press any key to return to options...
 pause 1 >nul
 GOTO OPTIONS
 :RESTORE
@@ -119,20 +113,19 @@ echo Device connected!
 ping localhost -n 2 >nul
 cscript popup.vbs "A Browse window will now open for you to select a backup to restore to"
 rem BrowseFiles ab C:\Program Files\Axon7Toolkit\backups
+IF EXIST backup.txt DEL backup.txt
+echo %result% >>backup.txt
 cscript popup.vbs "A screen will pop up on your device before the restore asking to allow restore from this computer. Enter a password if you encrypted the backup and then press Restore"
-cd C:\Program Files\Axon7Toolkit\backups
+start cmd /c "@echo off & mode con cols=80 lines=2 & color f0 & cd C:\Program Files\Axon7Toolkit\backups & set /p result=<backup.txt & echo                         Restoring... & adb restore %result% & DEL backup.txt"
 echo(
-echo Restoring...
-adb restore %result%
-echo(
-echo Press any key to return to options when restore is finished...
+echo Press any key to return to options...
 pause 1 >nul
 GOTO OPTIONS
 :LOCK
 echo(
 cscript popup.vbs "Use this option along with the restore to stock option if you need to send your phone in for warranty or reselling purposes or just want to have your phone just like it was out of the box. YOU MUST BE COMPLETELY STOCK TO USE THIS OPTION OTHERWISE YOUR PHONE WILL BE BRICKED!"
 echo(
-echo Checking ADB/Fastboot Connectivity...
+start cmd /c "@echo off & mode con cols=80 lines=4 & color f0 & echo( & echo( & echo                         Checking ADB/Fastboot Connectivity... & ping localhost -n 5 >nul"
 :acheck3
 set adbfail=List of devices attached
 for /f "delims=" %%a in ('adb devices') do set output=%%a
