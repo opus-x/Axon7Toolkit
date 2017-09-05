@@ -1,23 +1,3 @@
-@ECHO OFF
-REM BFCPEOPTIONSTART
-REM Advanced BAT to EXE Converter www.BatToExeConverter.com
-REM BFCPEEXE=D:\Output EXEs\Axon7Toolkit.exe
-REM BFCPEICON=C:\Users\Ben\Google Drive\Axon7Development\Axon7Toolkit\icons\toolkit.ico
-REM BFCPEICONINDEX=1
-REM BFCPEEMBEDDISPLAY=0
-REM BFCPEEMBEDDELETE=0
-REM BFCPEADMINEXE=1
-REM BFCPEINVISEXE=1
-REM BFCPEVERINCLUDE=0
-REM BFCPEVERVERSION=1.0.0.0
-REM BFCPEVERPRODUCT=Product Name
-REM BFCPEVERDESC=Product Description
-REM BFCPEVERCOMPANY=Your Company
-REM BFCPEVERCOPYRIGHT=Copyright Info
-REM BFCPEEMBED=C:\Users\Ben\Google Drive\Output EXEs\Toolkit.exe
-REM BFCPEOPTIONEND
-@ECHO ON
-@echo on
 set toolpath=C:\Axon7Development\Axon7Toolkit
 set popup=%toolpath%\bin\popup
 
