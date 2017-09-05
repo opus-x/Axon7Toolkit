@@ -23,7 +23,7 @@ The toolkit also downloads any dependencies that are needed such as TWRP Recover
 
 The toolkit supports ALL variants and ALL builds!
 
-This toolkit is continuously updated with new features and bug fixes! Why are you still reading this? Check out the toolkit!
+This toolkit is constantly updated with new features and bug fixes! Why are you still reading this? Check out the toolkit!
 
 
 SOURCE
