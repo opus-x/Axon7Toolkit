@@ -1,7 +1,7 @@
 # Axon7Toolkit
 Toolkit for Axon 7
 
-CURRENT STATUS: RELEASED
+Unlocking, rooting, flashing, it does it all!
 
  Toolkit Thread: https://forum.xda-developers.com/axon-7/development/tool-axon7toolkit-t3573108
 
@@ -13,20 +13,22 @@ For this device specifically, it is extremely complicated to unlock the bootload
 2) Backup/Restore apps+data through ADB 
 3) Backup/Restore device partitions in TWRP
 4) Unlock and lock your bootloader. The toolkit intelligently selects the fastboot package depending on your android version to prevent bricking. Your warranty also STAYS INTACT!
-5) Flash TWRP
-6) Root using TWRP
-7) Restore to stock. This option works in Download mode, meaning that it will work even if your device is bricked! However there are limited builds to restore to for this option as I do not have the bandwith to host such huge packages. If anyone would be willing to lend me server space, I would really appreciate it.
+5) Flash TWRP with automatic dm-verity and forced encryption disabling!
+6) Root with SuperSU
+7) Restore to the stock ROM! This option works in Download mode, meaning that it will work even if your device is fully bricked!
 8) Flash any and unlimited amount of zip files at once including Custom ROMs and kernels!
 9) OTA updates! No need to visit the toolkit thread every time, just start the toolkit and automatically update!
 
 The toolkit also downloads any dependencies that are needed such as TWRP Recovery images and SuperSU root zips with download verification. This means that dependencies can be updated seperately from the toolkit! (or downgraded if any issues arise!)
+
+The toolkit supports ALL variants and ALL builds!
 
 This toolkit is continuously updated with new features and bug fixes! Why are you still reading this? Check out the toolkit!
 
 
 SOURCE
 
-I have made the source of the main Toolkit available as of 9/5/17. Your are free to use it, but YOU MUST GIVE ME CREDIT and YOU CANNOT REDISTRIBUTE IT AS YOUR OWN!!!
+I have made the source of the main Toolkit available as of 9/5/17 in the "Source" folder. Your are free to use it, but YOU MUST GIVE ME CREDIT and YOU CANNOT REDISTRIBUTE IT AS YOUR OWN!!!
 
 LENDING ME SERVER SPACE
 
