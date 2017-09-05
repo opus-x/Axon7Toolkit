@@ -28,7 +28,7 @@ This toolkit is constantly updated with new features and bug fixes! Why are you 
 
 SOURCE
 
-I have made the source of the main Toolkit available as of 9/5/17 in the "Source" folder. Your are free to use it, but YOU MUST GIVE ME CREDIT and YOU CANNOT REDISTRIBUTE IT AS YOUR OWN!!!
+I have made the source of the main Toolkit available as of 9/5/17 in the "Source" folder. It is for EDUCATIONAL PURPOSES ONLY! You may not use it in any way or redestribute it as your own!
 
 LENDING ME SERVER SPACE
 
