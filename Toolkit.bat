@@ -107,6 +107,8 @@ echo ===========================================================================
 if %errorlevel% equ 0 set auto_androidver=6
 %toolpath%\adb shell getprop ro.build.version.release 2>&1 | find "7" >nul 2>&1
 if %errorlevel% equ 0 set auto_androidver=7
+%toolpath%\adb shell getprop ro.build.version.release 2>&1 | find "8" >nul 2>&1
+if %errorlevel% equ 0 set auto_androidver=8
 if not defined auto_androidver GOTO SET_ANDROIDVER_MANUAL
 echo.
 echo.
@@ -119,16 +121,21 @@ GOTO INITIATE
 echo.
 echo.
 echo                        1- Android 6
-echo                        2- Android 7 
+echo                        2- Android 7
+echo                        3- Android 8
 echo.
 echo.
-set /p "android_ver=Choose your android version(1-2):"
+set /p "android_ver=Choose your android version(1-3):"
 if "%android_ver%"=="1" (
 echo 6 >android_ver
 GOTO INITIATE
 )
 if "%android_ver%"=="2" (
 echo 7 >android_ver
+GOTO INITIATE
+)
+if "%android_ver%"=="3" (
+echo 8 >android_ver
 GOTO INITIATE
 )
 echo.
@@ -370,8 +377,7 @@ echo.
 echo Qualcomm HS-USB QDLoader 9008 device connected!
 for /f "delims=" %%a in ('%popup% "MiFlash will now be launched. Follow the instructions on the toolkit's screen and then return to the toolkit to finish the unlock process." "Information" "OKCancel"') do set button=%%a
 If %button% equ cancel GOTO OPTIONS
-if "%android_ver%"=="6 " echo %toolpath%\miflash\unlock\FASTBOOT_UNLOCK_EDL_MM|clip
-if "%android_ver%"=="7 " echo %toolpath%\miflash\unlock\FASTBOOT_UNLOCK_EDL_N|clip
+if "%android_ver%"=="6 " (echo %toolpath%\miflash\unlock\FASTBOOT_UNLOCK_EDL_MM|clip) else (echo %toolpath%\miflash\unlock\FASTBOOT_UNLOCK_EDL_N|clip)
 start C:\XiaoMi\XiaoMiFlash\XiaoMiFlash.exe
 echo.
 echo =========================================================================================
@@ -1167,17 +1173,22 @@ GOTO SOPTIONS
 cls
 echo(
 echo(
-echo                     1-Android 6
-echo                     2-Android 7
+echo                     1- Android 6
+echo                     2- Android 7
+echo                     3- Android 8
 echo(
 echo(
-set /p "android_ver=Choose your android version (1-2):"
+set /p "android_ver=Choose your android version (1-3):"
 if "%android_ver%"=="1" (
 echo 6 >android_ver
 GOTO AVERCONF
 )
 if "%android_ver%"=="2" (
 echo 7 >android_ver
+GOTO AVERCONF
+)
+if "%android_ver%"=="3" (
+echo 8 >android_ver
 GOTO AVERCONF
 )
 echo(
