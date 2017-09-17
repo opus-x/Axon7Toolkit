@@ -55,7 +55,7 @@ GOTO OPTIONS
 :SETVAR
 cls
 echo ====================================================================================
-echo          AXON7TOOLKIT 1.2.2
+echo          AXON7TOOLKIT 1.3.0
 echo ====================================================================================
 %toolpath%\adb shell getprop ro.product.model 2>&1 | findstr "\<ZTE A2017\>" >nul 2>&1
 if %errorlevel% equ 0 set auto_variant=A2017
@@ -101,7 +101,7 @@ GOTO SETVAR_MANUAL
 :SET_ANDROIDVER
 cls
 echo ====================================================================================
-echo          AXON7TOOLKIT 1.2.2
+echo          AXON7TOOLKIT 1.3.0
 echo ====================================================================================
 %toolpath%\adb shell getprop ro.build.version.release 2>&1 | find "6" >nul 2>&1
 if %errorlevel% equ 0 set auto_androidver=6
@@ -152,7 +152,7 @@ set root_disable=yes
 cd %toolpath%\bin
 cls
 echo ======================================================================================    			
-echo                                AXON7TOOLKIT 1.2.2
+echo                                AXON7TOOLKIT 1.3.0
 echo ======================================================================================
 echo.
 echo Variant: %variant%
@@ -1097,7 +1097,7 @@ GOTO OPTIONS
 cd %toolpath%\stored
 cls
 echo ================================================================================
-echo 	                          AXON7TOOLKIT 1.2.2
+echo 	                          AXON7TOOLKIT 1.3.0
 echo ================================================================================
 echo.
 set /p variant=<variant
