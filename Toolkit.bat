@@ -146,6 +146,7 @@ IF NOT EXIST "%toolpath%\root\%sversion%" (
 set supersu_root_disable=yes
 %popup% "SuperSU root file '%sversion%' is missing. SuperSU root option is disabled." "Information" "OK" "Warning" >nul 2>&1
 )
+set magisk_root_disable=
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini LatestMagisk magisk') do (set magversion=%%a)
 IF NOT EXIST "%toolpath%\root\%magversion%" (
 set magisk_root_disable=yes
@@ -484,13 +485,13 @@ if "%root_choice%"=="2" GOTO MAG_ROOT_FILE_CHECK
 echo.
 echo Invalid option!
 GOTO ROOT_CHOICE
-:SUPERSU_ROOT_FILECHECK
+:SUPERSU_ROOT_FILE_CHECK
 if "%supersu_root_disable"=="yes" (
 %popup% "SuperSU root option is disabled due to missing SuperSU root file." "Error" "OK" "Error" >nul 2>&1
 GOTO ROOT_CHOICE
 )
 GOTO acheck6
-:MAG_ROOT_FILE_CHECL
+:MAG_ROOT_FILE_CHECK
 if "%magisk_root_disable"=="yes" (
 %popup% "Magisk root option is disabled due to missing Magisk root file." "Error" "OK" "Error" >nul 2>&1
 GOTO ROOT_CHOICE
