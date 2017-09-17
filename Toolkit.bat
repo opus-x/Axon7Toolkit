@@ -23,8 +23,8 @@ rem CenterSelf
 mode con cols=100 lines=40
 color 0b
 set "toolpath=%~dp0" 
-set popup="%toolpath%\bin\popup"
-If defined programfiles(x86) (set devcon="%toolpath%\utils\devcon_x64") else (set "devcon=%toolpath%\utils\devcon_x86")
+set popup=%toolpath%\utils\popup
+If defined programfiles(x86) (set devcon=%toolpath%\utils\devcon_x64) else (set devcon=%toolpath%\utils\devcon_x86)
 cd "%toolpath%"
 :INITIATE2
 cls
@@ -266,7 +266,7 @@ if %errorlevel% equ 1 set shared=-shared
 if %errorlevel% equ 2 set shared=-noshared
 :BACKUPSAVE
 set result=
-for /f "delims=" %%a in ('"%toolpath%\utils\savefile" "ab files (*.ab)|*.ab" "%toolpath%\backups" "Save backup as" /F') do set "result=%%a"
+for /f "delims=" %%a in ('%toolpath%\utils\savefile "ab files (*.ab)|*.ab" "%toolpath%\backups" "Save backup as" /F') do set "result=%%a"
 if defined result GOTO acheck2
 for /f "delims=" %%a in ('%popup% "No backup name was entered!" "Error" "OKCancel" "Error"') do set button=%%a
 if %button% equ cancel (GOTO OPTIONS) else (GOTO BACKUPSAVE)
@@ -292,7 +292,7 @@ GOTO OPTIONS
 :RESTORE
 :BACKUPBROWSE
 set result=
-for /f "delims=" %%a in ('"%toolpath%\utils\openfile" "*.ab" "%toolpath%\backups" "Choose a backup"') do set "result=%%a"
+for /f "delims=" %%a in ('%toolpath%\utils\openfile "*.ab" "%toolpath%\backups" "Choose a backup"') do set "result=%%a"
 if defined result GOTO acheck3
 for /f "delims=" %%a in ('%popup% "You have not selected a backup!" "Error" "OKCancel" "Error"') do set button=%%a
 if %button% equ cancel (GOTO OPTIONS) else (GOTO BACKUPBROWSE)
@@ -342,8 +342,8 @@ timeout /t 15
 echo.
 echo Checking EDL connectivity...
 :echeck1
-%devcon% rescan >nul 2>&1
-%devcon% hwids * | find /I "USB\VID_05C6&PID_9008" >nul 2>&1
+"%devcon%" rescan >nul 2>&1
+"%devcon%" hwids * | find /I "USB\VID_05C6&PID_9008" >nul 2>&1
 IF "%ERRORLEVEL%" equ "0" (
 echo.
 echo EDL device connected!
@@ -354,12 +354,12 @@ If %button% equ cancel (GOTO OPTIONS) else (GOTO acheck4)
 :QDVCHECK
 echo.
 echo Searching for Qualcomm HS-USB QDLoader 9008 device...
-%devcon% rescan >nul 2>&1
-%devcon% find * | findstr "\<Qualcomm HS-USB QDLoader 9008\>" >nul 2>&1
+"%devcon%" rescan >nul 2>&1
+"%devcon%" find * | findstr "\<Qualcomm HS-USB QDLoader 9008\>" >nul 2>&1
 IF "%ERRORLEVEL%" equ "0" GOTO QDCONNECTED
 echo.
 echo Not found! Replacing driver...
-%devcon% update "%toolpath%\drivers\Qualcomm\qcser.inf" "USB\VID_05C6&PID_9008" >nul 2>&1
+"%devcon%" update "%toolpath%\drivers\Qualcomm\qcser.inf" "USB\VID_05C6&PID_9008" >nul 2>&1
 IF "%ERRORLEVEL%" equ "2" (
 %popup% "Failed to replace driver! Check C:\Windows\Inf\setupapi.dev.log for details." "Error" "OK" "Error" >nul 2>&1
 GOTO OPTIONS
@@ -467,8 +467,6 @@ if "%twrp_disable%"=="yes" (
 %popup% "Option is disabled due to missing twrp image." "Error" "OK" "Error" >nul 2>&1
 GOTO OPTIONS
 )
-GOTO OPTIONS
-)
 for /f "delims=" %%a in ('%popup% "This option will root your device using either SuperSU or Magisk and requires an unlocked bootloader. If your bootloader is not already unlocked, use the unlock option in the toolkit.\n\nWarning: Root will prevent your device from being able to install updates if you are using the stock ROM." "Information" "OKCancel"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
 cls
@@ -477,9 +475,10 @@ echo.
 echo.
 echo 1-SuperSU: Traditional systemless root
 echo 2-Magisk: Root which passes Safetynet and allows protected apps such as Android Pay, Pokemon Go, Snapchat and Netflix to work.
-               This form of root is hidden from these kind of apps. This option may not work on the stock ROM.
+echo           This form of root is hidden from these kind of apps. This option may not work on the stock ROM.
 echo.
-set /p "root_choice=Choose a root option(1-2):
+echo.
+set /p "root_choice=Choose a root option(1-2):"
 if "%root_choice%"=="1" GOTO SUPERSU_ROOT_FILE_CHECK
 if "%root_choice%"=="2" GOTO MAG_ROOT_FILE_CHECK
 echo.
@@ -707,8 +706,8 @@ timeout /t 15
 echo.
 echo Checking EDL Connectivity... 
 :echeck7
-%devcon% rescan >nul 2>&1
-%devcon% hwids * | find /I "USB\VID_05C6&PID_9008" >nul 2>&1
+"%devcon%" rescan >nul 2>&1
+"%devcon%" hwids * | find /I "USB\VID_05C6&PID_9008" >nul 2>&1
 IF "%ERRORLEVEL%" equ "0" (
 echo.
 echo EDL device connected!
@@ -719,12 +718,12 @@ If %button% equ cancel (GOTO OPTIONS) else (GOTO acheck7)
 :QDVCHECK2
 echo.
 echo Searching for Qualcomm HS-USB QDLoader 9008 device...
-%devcon% rescan >nul 2>&1
-%devcon% find * | findstr "\<Qualcomm HS-USB QDLoader 9008\>" >nul 2>&1
+"%devcon%" rescan >nul 2>&1
+"%devcon%" find * | findstr "\<Qualcomm HS-USB QDLoader 9008\>" >nul 2>&1
 IF "%ERRORLEVEL%" equ "0" GOTO QDCONNECTED2
 echo.
 echo Not found! Replacing driver... 
-%devcon% update "%toolpath%\drivers\Qualcomm\qcser.inf" "USB\VID_05C6&PID_9008" >nul 2>&1
+"%devcon%" update "%toolpath%\drivers\Qualcomm\qcser.inf" "USB\VID_05C6&PID_9008" >nul 2>&1
 IF "%ERRORLEVEL%" equ "2" (
 %popup% "Failed to replace driver! Check C:\Windows\Inf\setupapi.dev.log for details." "Error" "OK" "Error" >nul 2>&1
 GOTO OPTIONS
@@ -817,7 +816,7 @@ for /f "delims=" %%a in ('%popup% "This option allows you to flash Custom ROMs, 
 if %button% equ cancel GOTO OPTIONS
 :SELECTZIP
 set result=
-for /f "delims=" %%a in ('"%toolpath%\utils\openfile" "*.zip" "%USERPROFILE%\Downloads" "Select a zip"') do set "result=%%a"
+for /f "delims=" %%a in ('%toolpath%\utils\openfile "*.zip" "%USERPROFILE%\Downloads" "Select a zip"') do set "result=%%a"
 if defined result GOTO ZIPSAVE
 for /f "delims=" %%a in ('%popup% "You have not selected a zip!" "Error" "OKCancel" "Error"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
@@ -921,7 +920,7 @@ if %ERRORLEVEL% equ 1 set compress=--compress
 if %ERRORLEVEL% equ 2 set compress=
 :BACKUPSAVE2
 set result=
-for /f "delims=" %%a in ('"%toolpath%\utils\savefile" "ab files (*.ab)|*.ab" "%toolpath%\backups" "Save backup as" /F') do set "result=%%a"
+for /f "delims=" %%a in ('%toolpath%\utils\savefile "ab files (*.ab)|*.ab" "%toolpath%\backups" "Save backup as" /F') do set "result=%%a"
 if defined result GOTO twrpacheck 
 for /f "delims=" %%a in ('%popup% "You have not entered a backup name!" "Error" "OKCancel" "Error"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
@@ -994,7 +993,7 @@ for /f "delims=" %%a in ('%popup% "This option will restore your device's system
 if %button% equ cancel GOTO OPTIONS
 :BACKUPBROWSE2
 set result=
-for /f "delims=" %%a in ('"%toolpath%\utils\openfile" "*.ab" "%toolpath%\backups" "Select a backup to restore to"') do set "result=%%a"
+for /f "delims=" %%a in ('%toolpath%\utils\openfile "*.ab" "%toolpath%\backups" "Select a backup to restore to"') do set "result=%%a"
 if defined result GOTO twrpacheck2 
 for /f "delims=" %%a in ('%popup% "You have not selected a backup!" "Error" "OKCancel" "Error"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
@@ -1433,7 +1432,7 @@ pause
 echo(
 :IMPORTC
 set result=
-for /f "delims=" %%a in ('"%toolpath%\utils\openfile" "" "%USERPROFILE%\Downloads" "Choose file to import"') do set "result=%%a"
+for /f "delims=" %%a in ('%toolpath%\utils\openfile "" "%USERPROFILE%\Downloads" "Choose file to import"') do set "result=%%a"
 if not defined result (
 %popup% "No file was selected!" "Error" "OK" "Error" >nul 2>&1
 GOTO IMPORTC
