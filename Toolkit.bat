@@ -208,14 +208,12 @@ GOTO OPTIONS
 for /f "delims=" %%a in ('%popup% "This option will install the ADB, fastboot, and Qualcomm EDL drivers. Accept any prompts that appear, otherwise the driver install will fail. If you do not get a prompt for a driver then it is already installed.\n\nPlease unplug your device before continuing." "Information" "OKCancel"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
 echo(
-echo(
 echo Installing ADB/Fastboot drivers...
 ping localhost -n 2 >nul
 %devcon% dp_add %toolpath%\drivers\ADB\android_winusb.inf >nul 2>&1
 if %errorlevel% equ 2 (
 %popup% "Failed to install ADB/Fastboot drivers! Check C:\Windows\Inf\setupapi.dev.log for details." "Error" "OK" "Error" >nul 2>&1
 )
-echo(
 echo(
 echo Installing Qualcomm EDL driver...
 ping localhost -n 2 >nul
@@ -244,7 +242,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader...
 %toolpath%\adb reboot bootloader
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 :fcheck1
 echo.
 echo Checking Fastboot Connectivity... 
@@ -335,7 +334,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to EDL mode...
 %toolpath%\adb reboot edl 
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking EDL connectivity...
 :echeck1
@@ -379,6 +379,7 @@ echo ===========================================================================
 echo 1) The path to the fastboot package has been copied to your clipboard. 
 echo Paste it into the text field at the top by clicking it and then press Cltrl+V on your keyboard.
 echo Ignore the "couldn't find script" error.
+echo ***You may need to click 'Refresh' before your device is seen in MiFlash.***
 echo 2) Press the flash button at the top right and wait for the package to flash.
 echo 3) Press and hold the power button for 10-15 seconds to exit out of EDL mode.
 echo.
@@ -403,7 +404,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader...
 %toolpath%\adb reboot bootloader
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking Fastboot Connectivity...
 :fcheck4b
@@ -437,7 +439,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader...
 %toolpath%\adb reboot bootloader
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking Fastboot Connectivity... 
 :fcheck5
@@ -478,7 +481,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader...
 %toolpath%\adb reboot bootloader
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking Fastboot Connectivity...
 :fcheck6
@@ -503,7 +507,8 @@ echo.
 %toolpath%\fastboot boot %toolpath%\twrp\%tversion%
 echo.
 echo Tap 'Keep read-only'" on startup!
-ping localhost -n 20 >nul
+echo Press any key to continue once TWRP has fully loaded...
+pause >nul
 :acheck6b
 echo.
 echo Checking ADB Recovery Connectivity... 
@@ -669,7 +674,8 @@ echo ADB device connected!
 echo.
 echo Rebooting into EDL mode...
 %toolpath%\adb reboot edl
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking EDL Connectivity... 
 :echeck7
@@ -717,6 +723,7 @@ echo ===========================================================================
 echo 1) The path to the package that needs to be flashed has been copied to your clipboard. 
 echo Paste it into the text field at the top by clicking it and then press Cltrl+V on your keyboard.
 echo Ignore the "couldn't find script" error.
+echo ***You may need to click 'Refresh' before your device is seen in MiFlash.***
 echo 2) Press the flash button at the top right and wait for the package to flash.
 echo 3) Press and hold the power button for 10-15 seconds to exit out of EDL mode.
 echo.
@@ -804,7 +811,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader... 
 %toolpath%\adb reboot bootloader
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking Fastboot Connectivity... 
 :fcheck8
@@ -830,7 +838,8 @@ echo.
 %toolpath%\fastboot boot %toolpath%\twrp\%tversion%
 echo.
 echo Tap 'Keep read-only' on startup!
-ping localhost -n 20 >nul
+echo Press any key to continue once TWRP has fully loaded...
+pause >nul
 :acheck8b
 echo.
 echo Checking ADB Recovery Connectivity...
@@ -900,7 +909,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader...
 %toolpath%\adb reboot bootloader
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking Fastboot Connectivity... 
 :twrpfcheck
@@ -926,7 +936,8 @@ echo.
 %toolpath%\fastboot boot %toolpath%\twrp\%tversion%
 echo.
 echo Swipe to allow modifications on startup!
-ping localhost -n 20 >nul
+echo Press any key to continue once TWRP has fully loaded...
+pause >nul
 :twrpacheckb
 echo.
 echo Checking ADB Recovery Connectivity... 
@@ -972,7 +983,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader...
 %toolpath%\adb reboot bootloader
-ping localhost -n 15 >nul
+echo.
+timeout /t 15
 echo.
 echo Checking Fastboot Connectivity... 
 :twrpfcheck2
@@ -998,7 +1010,8 @@ echo.
 %toolpath%\fastboot boot %toolpath%\twrp\%tversion%
 echo.
 echo Swipe to allow modifications on startup!
-ping localhost -n 20 >nul
+echo Press any key to continue once TWRP recovery has fully loaded...
+pause >nul
 :twrpacheckb2
 echo.
 echo Checking ADB Recovery Connectivity... 
@@ -1036,7 +1049,8 @@ echo ADB device connected!
 echo.
 echo Rebooting to bootloader...
 %toolpath%\adb reboot bootloader
-ping localhost -n 10 >nul  
+echo.
+timeout /t 15
 echo.
 echo Checking Fastboot Connectivity... 
 :fcheck9
@@ -1061,8 +1075,9 @@ echo Booting TWRP...
 echo.
 %toolpath%\fastboot boot %toolpath%\twrp\%tversion%
 echo.
-echo Tap 'Keep read-only'" on startup!
-Ping localhost -n 20 >nul
+echo Tap 'Keep read-only' on startup!
+echo Press any key to continue once TWRP has fully loaded...
+pause >nul
 :acheck9b
 echo.
 echo Checking ADB Recovery Connectivity... 
