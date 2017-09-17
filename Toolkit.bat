@@ -2,7 +2,7 @@
 REM BFCPEOPTIONSTART
 REM Advanced BAT to EXE Converter www.BatToExeConverter.com
 REM BFCPEEXE=
-REM BFCPEICON=C:\Users\Ben\Google Drive\Axon7Development\Axon7Toolkit\icons\toolkit.ico
+REM BFCPEICON=C:\Users\Ben\Google Drive\Axon7Toolkit\icons\toolkit.ico
 REM BFCPEICONINDEX=1
 REM BFCPEEMBEDDISPLAY=0
 REM BFCPEEMBEDDELETE=1
@@ -22,10 +22,9 @@ title Axon7Toolkit
 rem CenterSelf
 mode con cols=100 lines=40
 color 0b
-set toolpath=C:\Axon7Development\Axon7Toolkit 
-set toolpath=%toolpath: =%
-set popup=%toolpath%\bin\popup
-If defined programfiles(x86) (set devcon=%toolpath%\devcon_x64) else (set devcon=%toolpath%\devcon_x86)
+set "toolpath=%~dp0" 
+set popup="%toolpath%\bin\popup"
+If defined programfiles(x86) (set devcon="%toolpath%\devcon_x64") else (set "devcon=%toolpath%\devcon_x86")
 cd %toolpath%
 :INITIATE2
 cls
