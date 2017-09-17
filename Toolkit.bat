@@ -107,8 +107,6 @@ echo ===========================================================================
 if %errorlevel% equ 0 set auto_androidver=6
 %toolpath%\adb shell getprop ro.build.version.release 2>&1 | find "7" >nul 2>&1
 if %errorlevel% equ 0 set auto_androidver=7
-%toolpath%\adb shell getprop ro.build.version.release 2>&1 | find "8" >nul 2>&1
-if %errorlevel% equ 0 set auto_androidver=8
 if not defined auto_androidver GOTO SET_ANDROIDVER_MANUAL
 echo.
 echo.
@@ -122,20 +120,15 @@ echo.
 echo.
 echo                        1- Android 6
 echo                        2- Android 7
-echo                        3- Android 8
 echo.
 echo.
-set /p "android_ver=Choose your android version(1-3):"
+set /p "android_ver=Choose your android version(1-2):"
 if "%android_ver%"=="1" (
 echo 6 >android_ver
 GOTO INITIATE
 )
 if "%android_ver%"=="2" (
 echo 7 >android_ver
-GOTO INITIATE
-)
-if "%android_ver%"=="3" (
-echo 8 >android_ver
 GOTO INITIATE
 )
 echo.
@@ -1175,7 +1168,6 @@ echo(
 echo(
 echo                     1- Android 6
 echo                     2- Android 7
-echo                     3- Android 8
 echo(
 echo(
 set /p "android_ver=Choose your android version (1-3):"
@@ -1185,10 +1177,6 @@ GOTO AVERCONF
 )
 if "%android_ver%"=="2" (
 echo 7 >android_ver
-GOTO AVERCONF
-)
-if "%android_ver%"=="3" (
-echo 8 >android_ver
 GOTO AVERCONF
 )
 echo(
