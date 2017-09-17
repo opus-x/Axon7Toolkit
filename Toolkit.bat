@@ -140,11 +140,16 @@ IF NOT EXIST "%toolpath%\twrp\%tversion%" (
 set twrp_disable=yes
 %popup% "Twrp image '%tversion%' is missing. Related options are disabled." "Information" "OK" "Warning" >nul 2>&1
 )
-set root_disable=
+set supersu_root_disable=
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini LatestSuperSU supersu') do (set sversion=%%a) 
 IF NOT EXIST "%toolpath%\root\%sversion%" (
-set root_disable=yes
-%popup% "SuperSU root file '%sversion%' is missing. Root option is disabled." "Information" "OK" "Warning" >nul 2>&1
+set supersu_root_disable=yes
+%popup% "SuperSU root file '%sversion%' is missing. SuperSU root option is disabled." "Information" "OK" "Warning" >nul 2>&1
+)
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini LatestMagisk magisk') do (set magversion=%%a)
+IF NOT EXIST "%toolpath%\root\%magversion%" (
+set magisk_root_disable=yes
+%popup% "Magisk root file '%magversion%' is missing. Magisk root option is disabled." "Information" "OK" "Warning" >nul 2>&1
 )
 cd "%toolpath%"
 cls
@@ -461,13 +466,35 @@ if "%twrp_disable%"=="yes" (
 %popup% "Option is disabled due to missing twrp image." "Error" "OK" "Error" >nul 2>&1
 GOTO OPTIONS
 )
-if "%root_disable%"=="yes" (
-%popup% "Option is disabled due to missing SuperSU root file." "Error" "OK" "Error" >nul 2>&1
 GOTO OPTIONS
 )
-for /f "delims=" %%a in ('%popup% "This option will root your device using SuperSU and requires an unlocked bootloader. If your bootloader is not already unlocked, use the unlock option in the toolkit.\n\nWarning: Root will prevent your device from being able to install updates if you are using the stock ROM." "Information" "OKCancel"') do set button=%%a
+for /f "delims=" %%a in ('%popup% "This option will root your device using either SuperSU or Magisk and requires an unlocked bootloader. If your bootloader is not already unlocked, use the unlock option in the toolkit.\n\nWarning: Root will prevent your device from being able to install updates if you are using the stock ROM." "Information" "OKCancel"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
 cls
+:ROOT_CHOICE
+echo.
+echo.
+echo 1-SuperSU: Traditional systemless root
+echo 2-Magisk: Root which passes Safetynet and allows protected apps such as Android Pay, Pokemon Go, Snapchat and Netflix to work.
+               This form of root is hidden from these kind of apps. This option may not work on the stock ROM.
+echo.
+set /p "root_choice=Choose a root option(1-2):
+if "%root_choice%"=="1" GOTO SUPERSU_ROOT_FILE_CHECK
+if "%root_choice%"=="2" GOTO MAG_ROOT_FILE_CHECK
+echo.
+echo Invalid option!
+GOTO ROOT_CHOICE
+:SUPERSU_ROOT_FILECHECK
+if "%supersu_root_disable"=="yes" (
+%popup% "SuperSU root option is disabled due to missing SuperSU root file." "Error" "OK" "Error" >nul 2>&1
+GOTO ROOT_CHOICE
+)
+GOTO acheck6
+:MAG_ROOT_FILE_CHECL
+if "%magisk_root_disable"=="yes" (
+%popup% "Magisk root option is disabled due to missing Magisk root file." "Error" "OK" "Error" >nul 2>&1
+GOTO ROOT_CHOICE
+)
 :acheck6
 echo.
 echo Checking ADB\Fastboot Connectivity... 
@@ -518,10 +545,12 @@ echo.
 echo ADB recovery device connected!
 echo.
 echo Pushing root file to device...
-"%toolpath%\utils\adb" push "%toolpath%\root\%sversion%" /sdcard/
+if "%root_choice%"=="1" "%toolpath%\utils\adb" push "%toolpath%\root\%sversion%" /sdcard/
+if "%root_choice%"=="2" "%toolpath%\utils\adb" push "%toolpath%\root\%magversion%" /sdcard/
 echo.
 echo Rooting...
-"%toolpath%\utils\adb" shell twrp install /sdcard/%sversion% >nul 2>&1
+if "%root_choice%"=="1" "%toolpath%\utils\adb" shell twrp install /sdcard/%sversion% >nul 2>&1
+if "%root_choice%"=="2" "%toolpath%\utils\adb" shell twrp install /sdcard/%magversion% >nul 2>&1
 "%toolpath%\utils\adb" shell twrp wipe cache >nul 2>&1
 "%toolpath%\utils\adb" shell twrp wipe dalvik >nul 2>&1
 "%toolpath%\utils\adb" shell reboot disemmcwp >nul 2>&1
@@ -1483,7 +1512,7 @@ for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks 
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini FileDirectories %filename%') do (set directory=%%a) 
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum %filename%') do (set sha256sum=%%a) 
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes %filename%') do (set size=%%a)
-IF EXIST "%toolpath%\%directory%\%filename%" exit /b
+IF EXIST "%toolpath%\%directory%\%filename%" GOTO MAGISK
 echo.
 echo Downloading SuperSU root file...
 ping localhost -n 2 >nul
@@ -1498,3 +1527,26 @@ IF EXIST "%toolpath%\%directory%\%filename%" DEL /F "%toolpath%\%directory%\%fil
 ping localhost -n 2 >nul
 exit /b
 )
+:MAGISK
+cd "%toolpath%\stored"
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini LatestMagisk magisk') do (set filename=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks %filename%') do (set filelink=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini FileDirectories %filename%') do (set directory=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum %filename%') do (set sha256sum=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes %filename%') do (set size=%%a)
+IF EXIST "%toolpath%\%directory%\%filename%" exit /b
+echo.
+echo Downloading Magisk root file...
+ping localhost -n 2 >nul
+call :DOWNLOADER %filename% %directory% %filelink% %sha256sum% %size% dependency
+IF "%ERRORLEVEL%" equ "1" (
+echo.
+echo Failed to download Magisk root file!
+taskkill /F /IM wget.exe >nul 2>&1
+taskkill /F /IM md5sum.exe >nul 2>&1
+taskkill /F /IM sha256sum.exe >nul 2>&1
+IF EXIST "%toolpath%\%directory%\%filename%" DEL /F "%toolpath%\%directory%\%filename%"
+ping localhost -n 2 >nul
+exit /b
+)
+
