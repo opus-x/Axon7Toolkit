@@ -474,8 +474,7 @@ cls
 echo.
 echo.
 echo 1-SuperSU: Traditional systemless root
-echo 2-Magisk: Root which passes Safetynet and allows protected apps such as Android Pay, Pokemon Go, Snapchat and Netflix to work.
-echo           This form of root is hidden from these kind of apps. This option may not work on the stock ROM.
+echo 2-Magisk: Root which passes Safetynet and allows protected apps such as Android Pay, Pokemon Go, Snapchat and Netflix to work. This form of root is hidden from these kind of apps. This option may not work on the stock ROM.
 echo.
 echo.
 set /p "root_choice=Choose a root option(1-2):"
@@ -554,7 +553,8 @@ if "%root_choice%"=="2" "%toolpath%\utils\adb" shell twrp install /sdcard/%magve
 "%toolpath%\utils\adb" shell twrp wipe cache >nul 2>&1
 "%toolpath%\utils\adb" shell twrp wipe dalvik >nul 2>&1
 "%toolpath%\utils\adb" shell reboot disemmcwp >nul 2>&1
-%popup% "Your device should have successfully been rooted! To make sure your device is rooted, find the SuperSU app in your app drawer and launch it. If the app is missing or the app says that no root binary is installed, try the root option again." "Information" >nul 2>&1
+if "%root_choice%"=="1" %popup% "Your device should have successfully been rooted! To make sure your device is rooted, find the SuperSU app in your app drawer and launch it. If the app is missing or the app says that no root binary is installed, try the SuperSU root option again." "Information" >nul 2>&1
+if "%root_choice%"=="2" %popup% "Your device should have successfully been rooted! To make sure your device is rooted, find the Magisk Manager app in your app drawer and launch it. Run the Safetynet test. If the Safetynet test fails or Magisk Manager says magisk is not installed, try the Magisk root option agian." "Information" >nul 2>&1 
 GOTO OPTIONS
 :STOCKRESTORE
 cls
