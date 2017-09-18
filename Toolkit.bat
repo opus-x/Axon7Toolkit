@@ -546,6 +546,7 @@ echo.
 echo Backing up boot image...
 "%toolpath%\utils\adb" shell dd if=/dev/block/bootdevice/by-name/boot of=/sdcard/boot_backup.img >nul 2>&1
 "%toolpath%\utils\adb" pull /sdcard/boot_backup.img "%toolpath%\root"
+"%toolpath%\utils\adb" shell rm -f /sdcard/boot_backup.img >nul 2>&1
 echo.
 echo Pushing root file to device...
 if "%root_choice%"=="1" "%toolpath%\utils\adb" push "%toolpath%\root\%sversion%" /sdcard/
