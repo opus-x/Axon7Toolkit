@@ -543,6 +543,10 @@ if %button% equ cancel (GOTO OPTIONS) else (GOTO acheck6b)
 echo.
 echo ADB recovery device connected!
 echo.
+echo Backing up boot image...
+"%toolpath%\utils\adb" shell dd if=/dev/block/bootdevice/by-name/boot of=/sdcard/boot_backup.img >nul 2>&1
+"%toolpath%\utils\adb" pull /sdcard/boot_backup.img "%toolpath%\root"
+echo.
 echo Pushing root file to device...
 if "%root_choice%"=="1" "%toolpath%\utils\adb" push "%toolpath%\root\%sversion%" /sdcard/
 if "%root_choice%"=="2" "%toolpath%\utils\adb" push "%toolpath%\root\%magversion%" /sdcard/
