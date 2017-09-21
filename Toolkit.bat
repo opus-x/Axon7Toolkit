@@ -176,18 +176,19 @@ echo 7. UNLOCK BOOTLOADER
 echo 8. LOCK BOOTLOADER          
 echo 9. FLASH TWRP
 echo 10. ROOT
-echo 11. RESTORE TO STOCK/RECOVER FROM HARDBRICK (EDL)
-echo 12. FLASH ZIPS
-echo 13. SETTINGS
-echo 14. FAQ AND TROUBLESHOOTING
-echo 15. DONATE
+echo 11. UNROOT
+echo 12. RESTORE TO STOCK/RECOVER FROM HARDBRICK (EDL)
+echo 13. FLASH ZIPS
+echo 14. SETTINGS
+echo 15. FAQ AND TROUBLESHOOTING
+echo 16. DONATE
 IF NOT EXIST "%toolpath%\stored\debuggingprompt.txt" (
 %popup% "Make sure USB debugging is enabled on your device before choosing any of the options:\n\n1-Open the Settings app. Go down to About Phone and select it.\n\n2-Go down to build number. Quickly tap it 7 times to enable developer options.\n\n3-Go back to the main Settings screen (or the Advanced Options menu on Nougat) and go into developer options.\n\n4-Turn on 'USB debugging' and 'OEM Unlock'." "Information" "OK" "Warning" >nul 2>&1 
 type nul >%toolpath%\stored\debuggingprompt.txt
 )
 echo.
 set option=
-set /p "option=Choose an option(1-15):"
+set /p "option=Choose an option(1-16):"
 if "%option%"=="1" (GOTO DVINSTALL)
 if "%option%"=="2" (GOTO TEST)
 if "%option%"=="3" (GOTO BACKUP)
@@ -198,11 +199,12 @@ if "%option%"=="7" (GOTO UNLOCK)
 if "%option%"=="8" (GOTO LOCK)
 if "%option%"=="9" (GOTO TWRPFLASH) 
 if "%option%"=="10" (GOTO ROOT)
-if "%option%"=="11" (GOTO STOCKRESTORE)
-if "%option%"=="12" (GOTO ZIPFLASH)
-if "%option%"=="13" (GOTO SOPTIONS)
-if "%option%"=="14" (start "" "https://forum.xda-developers.com/showpost.php?p=71430637&postcount=2") & (GOTO OPTIONS)
-if "%option%"=="15" (start "" "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ZW4F4MN9JSD2S&lc=US&item_name=bkores&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted") & (GOTO OPTIONS)
+if "%option%"=="11" (GOTO UNROOT)
+if "%option%"=="12" (GOTO STOCKRESTORE)
+if "%option%"=="13" (GOTO ZIPFLASH)
+if "%option%"=="14" (GOTO SOPTIONS)
+if "%option%"=="15" (start "" "https://forum.xda-developers.com/showpost.php?p=71430637&postcount=2") & (GOTO OPTIONS)
+if "%option%"=="16" (start "" "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ZW4F4MN9JSD2S&lc=US&item_name=bkores&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted") & (GOTO OPTIONS)
 echo.
 echo Invalid option!
 ping localhost -n 2 >nul
@@ -373,7 +375,7 @@ echo.
 echo Qualcomm HS-USB QDLoader 9008 device connected!
 for /f "delims=" %%a in ('%popup% "MiFlash will now be launched. Follow the instructions on the toolkit's screen and then return to the toolkit to finish the unlock process." "Information" "OKCancel"') do set button=%%a
 If %button% equ cancel GOTO OPTIONS
-if "%android_ver%"=="6 " (echo %toolpath%\edl_packages\unlock\FASTBOOT_UNLOCK_EDL_MM|clip) else (echo %toolpath%\miflash\edl_packages\FASTBOOT_UNLOCK_EDL_N|clip)
+if "%android_ver%"=="6 " (echo %toolpath%\edl_packages\unlock\FASTBOOT_UNLOCK_EDL_MM|clip) else (echo %toolpath%\edl_packages\unlock\FASTBOOT_UNLOCK_EDL_N|clip)
 start C:\XiaoMi\XiaoMiFlash\XiaoMiFlash.exe
 echo.
 echo =========================================================================================
@@ -544,9 +546,9 @@ echo.
 echo ADB recovery device connected!
 echo.
 echo Backing up boot image...
-"%toolpath%\utils\adb" shell dd if=/dev/block/bootdevice/by-name/boot of=/sdcard/boot_backup.img >nul 2>&1
-"%toolpath%\utils\adb" pull /sdcard/boot_backup.img "%toolpath%\root"
-"%toolpath%\utils\adb" shell rm -f /sdcard/boot_backup.img >nul 2>&1
+"%toolpath%\utils\adb" shell dd if=/dev/block/bootdevice/by-name/boot of=/sdcard/boot.img >nul 2>&1
+"%toolpath%\utils\adb" pull /sdcard/boot.img "%toolpath%\root"
+"%toolpath%\utils\adb" shell rm -f /sdcard/boot.img >nul 2>&1
 echo.
 echo Pushing root file to device...
 if "%root_choice%"=="1" "%toolpath%\utils\adb" push "%toolpath%\root\%sversion%" /sdcard/
@@ -561,6 +563,15 @@ if "%root_choice%"=="2" "%toolpath%\utils\adb" shell twrp install /sdcard/%magve
 if "%root_choice%"=="1" %popup% "Your device should have successfully been rooted! To make sure your device is rooted, find the SuperSU app in your app drawer and launch it. If the app is missing or the app says that no root binary is installed, try the SuperSU root option again." "Information" >nul 2>&1
 if "%root_choice%"=="2" %popup% "Your device should have successfully been rooted! To make sure your device is rooted, find the Magisk Manager app in your app drawer and launch it. Run the Safetynet test. If the Safetynet test fails or Magisk Manager says magisk is not installed, try the Magisk root option agian." "Information" >nul 2>&1 
 GOTO OPTIONS
+:UNROOT
+if "%twrp_disable%"=="yes" (
+%popup% "Option is disabled due to missing twrp image." "Error" "OK" "Error" >nul 2>&1
+GOTO OPTIONS
+)
+if not exist "%toolpath%\root\boot.img" (
+%popup% "Boot image missing. Please place a boot.img from your device's zip into the 'root' folder and try again." "Error" "OK" "Error" >nul 2>&1
+GOTO OPTIONS
+)
 :STOCKRESTORE
 cls
 echo.
