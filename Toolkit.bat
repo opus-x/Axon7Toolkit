@@ -572,6 +572,63 @@ if not exist "%toolpath%\root\boot.img" (
 %popup% "Boot image missing. Please place a boot.img from your device's zip into the 'root' folder and try again." "Error" "OK" "Error" >nul 2>&1
 GOTO OPTIONS
 )
+:unroot_acheck
+echo.
+echo Checking ADB\Fastboot Connectivity... 
+"%toolpath%\utils\adb" devices | findstr "\<device\>" >nul 2>&1
+IF "%ERRORLEVEL%" EQU "1" GOTO unroot_fcheck
+echo.
+echo ADB device connected! 
+echo.
+echo Rebooting to bootloader...
+"%toolpath%\utils\adb" reboot bootloader
+echo.
+timeout /t 15
+echo.
+echo Checking Fastboot Connectivity...
+:unroot_fcheck
+"%toolpath%\utils\fastboot" devices | find "fastboot" >nul 2>&1
+IF "%ERRORLEVEL%" equ "0" GOTO unroot_fconnected
+for /f "delims=" %%a in ('%popup% "Fastboot device is not connected.\n\nTroubleshooting:\n\n-Make sure your device is connected to the PC. For best results use the original OEM cable and plug your device into a USB 2.0 port.\n\n-Use the install driver option\n\n-Make sure your drivers are properly configured. Your device should be shown as something similar to 'Android Composite Bootloader Interface' in Device Manager\n\n-Try an alternate USB 2.0 port\n\n-Boot your device into bootloader mode manually: Press and hold the power and volume up buttons for 10-15 seconds to boot into recovery, then use the volume down key to go down to 'Reboot to bootloader' and press power to select.\n\nIf your device rebooted normally then your device has no access to fastboot. Follow the miflash instructions for the bootloader unlock option to restore your device's fastboot mode.\n\nYou also may just need to try again.\n\nPress 'OK' to try again.\n\nPress 'Cancel' to return to options." "Error" "OKCancel" "Stop"') do set button=%%a
+if %button% equ cancel (GOTO OPTIONS) else (GOTO unroot_acheck)
+:unroot_fconnected
+echo.
+echo Fastboot device connected!
+if "%android_ver%"=="6 " (
+echo.
+echo Flashing TWRP...
+echo.
+"%toolpath%\utils\fastboot" flash recovery "%toolpath%\twrp\%tversion%"
+%popup% "Keep pressing the volume up key on the device until the 'Start' at the top changes to 'Recovery mode'. Then press power to select.\n\nPress 'OK' to continue when TWRP recovery has fully loaded.\n\nMake sure to tap 'Keep read-only' on startup!" "Information" >nul 2>&1
+GOTO acheck6b
+)
+echo.
+echo Booting TWRP...
+echo.
+"%toolpath%\utils\fastboot" boot "%toolpath%\twrp\%tversion%"
+echo.
+echo Tap 'Keep read-only'" on startup!
+echo Press any key to continue once TWRP has fully loaded...
+pause >nul
+:unroot_acheckb
+echo.
+echo Checking ADB Recovery Connectivity... 
+"%toolpath%\utils\adb" devices | find "recovery" >nul 2>&1
+if "%ERRORLEVEL%" equ "0" GOTO unroot_aconnectedb
+for /f "delims=" %%a in ('%popup% "ADB recovery device is not connected.\n\nTroubleshooting:\n\n-Make sure your device is connected to the PC. For best results use the original OEM cable and plug your device into a USB 2.0 port\n\n-Use the install driver option\n\n-Make sure your drivers are properly configured. Your device should be shown as something similar to 'Android Composite ADB Interface' in Device Manager\n\n-Try an alternate USB 2.0 port\n\nYou also may just need to try again.\n\nPress 'OK' to try again.\n\nPress 'Cancel' to return to options." "Error" "OKCancel" "Stop"') do set button=%%a 
+if %button% equ cancel (GOTO OPTIONS) else (GOTO unroot_acheckb)
+:unroot_aconnectedb
+echo.
+echo ADB recovery device connected!
+echo.
+echo Restoring boot image and unrooting...
+"%toolpath%\utils\adb" push "%toolpath%\root\boot.img" /sdcard/
+"%toolpath%\utils\adb" shell dd if=/sdcard/boot.img of=/dev/block/bootdevice/by-name/boot >nul 2>&1
+"%toolpath%\utils\adb" shell rm -f /sdcard/boot.img >nul 2>&1
+echo.
+echo Press any key to return to options...
+pause >nul
+GOTO OPTIONS
 :STOCKRESTORE
 cls
 echo.
