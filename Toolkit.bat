@@ -634,138 +634,12 @@ pause >nul
 GOTO OPTIONS
 :STOCKRESTORE
 cls
-echo.
-IF "%variant%"=="A2017" GOTO RESTOREB13
-IF "%variant%"=="A2017G" GOTO RESTOREB10
-echo 1-B15_N
-echo 2-B19_N
-echo.
-set package=
-set /p "package=Choose a build to restore to(1-2) or press enter to cancel:"
-if "%package%"=="1" (GOTO RESTOREB15)
-if "%package%"=="2" (GOTO RESTOREB19)
-if not defined package GOTO OPTIONS
-echo.
-echo Invalid entry!
-Ping localhost -n 2 >nul
-GOTO STOCKRESTORE
-:RESTOREB15
-for /f "delims=" %%a in ('%popup% "This option will restore your device to stock OTA-capable B15. The toolkit will automatically download the B15 package if it does not exist in the toolkit." "Information" "OKCancel"') do set button=%%a
-if %button% equ cancel GOTO OPTIONS
-cls
-:B15CHECK
-IF EXIST "%toolpath%\edl_packages\A2017U_B15-NEW\A2017U_B15-NEW_FULL_EDL.zip" GOTO RESTOREB15CONT
-echo.
-echo Downloading B15 package...
-ping localhost -n 2 >nul
-cd "%toolpath%\stored"
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks A2017U_B15-NEW_FULL_EDL.zip') do (set filelink=%%a) 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum A2017U_B15-NEW_FULL_EDL.zip') do (set filesha256=%%a) 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes A2017U_B15-NEW_FULL_EDL.zip') do (set size=%%a)
-cd "%toolpath%"
-call :Downloader A2017U_B15-NEW_FULL_EDL.zip edl_packages\A2017U_B15-NEW %filelink% %filesha256% %size% dependency
-IF "%ERRORLEVEL%" equ "1" (
-echo.
-echo Package download failed!
-ping localhost -n 2 >nul
-taskkill /F /IM wget.exe >nul 2>&1
-taskkill /F /IM sha256sum.exe >nul 2>&1
-IF EXIST "%toolpath%\edl_packages\A2017U_B15-NEW\A2017U_B15-NEW_FULL_EDL.zip" DEL "%toolpath%\edl_packages\A2017U_B15-NEW\A2017U_B15-NEW_FULL_EDL.zip"
-GOTO OPTIONS
-) 
-:RESTOREB15CONT
-IF EXIST "%toolpath%\edl_packages\A2017U_B15-NEW\A2017U_B15-NEW_FULL_EDL\" GOTO MCHECK2
-echo.
-echo Extracting B15 package... 
-cd "%toolpath%\edl_packages\A2017U_B15-NEW" 
-"%toolpath%\utils\\7za" x A2017U_B15-NEW_FULL_EDL.zip >nul 2>&1
-set errorcode=%ERRORLEVEL%
-IF NOT %errorcode% equ 0 (
-%popup% "Failed to extract package!\n7za error code: %errorcode%" "Error" "OK" "Error" >nul 2>&1
-GOTO OPTIONS
-)
-cd "%toolpath%"
 :MCHECK2
 IF EXIST C:\XiaoMi\XiaoMiFlash\ GOTO acheck7
 for /f "delims=" %%a in ('%popup% "MiFlash version 20161222 is not installed on your system. This is required for the restore stock function of the toolkit to work. Please go through the setup. It's all in Chinese, but just keep clicking the next button at the bottom right." "Information" "OKCancel"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
-start "" "%toolpath%\MiFlashSetup.msi"
-echo.
+start "" "%toolpath\MiFlashSetup.msi"
 pause
-GOTO MCHECK2
-:RESTOREB19
-for /f "delims=" %%a in ('%popup% "This option will restore your device to stock OTA-capable B19. The toolkit will automatically download the B19 package if it does not exist in the toolkit." "Information" "OKCancel"') do set button=%%a
-if %button% equ cancel GOTO OPTIONS
-cls
-:B19CHECK
-IF EXIST "%toolpath%\edl_packages\A2017U_B19-NOUGAT\A2017U_B19-NOUGAT_FULL_EDL.zip" GOTO RESTOREB19CONT
-echo.
-echo Downloading B19 package...
-ping localhost -n 2 >nul
-cd "%toolpath%\stored"
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks A2017U_B19-NOUGAT_FULL_EDL.zip') do set filelink=%%a 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum A2017U_B19-NOUGAT_FULL_EDL.zip') do set filesha256=%%a 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes A2017U_B19-NOUGAT_FULL_EDL.zip') do set size=%%a
-cd "%toolpath%"
-call :DOWNLOADER A2017U_B19-NOUGAT_FULL_EDL.zip edl_packages\A2017U_B19-NOUGAT %filelink% %filesha256% %size% dependency
-IF "%ERRORLEVEL%" equ "1" (
-echo.
-echo Package download failed!
-ping localhost -n 2 >nul
-taskkill /F /IM wget.exe >nul 2>&1
-taskkill /F /IM sha256sum.exe >nul 2>&1
-IF EXIST "%toolpath%\edl_packages\A2017U_B19-NOUGAT\A2017U_B19-NOUGAT_FULL_EDL.zip" DEL "%toolpath%\edl_packages\A2017U_B19-NOUGAT\A2017U_B19-NOUGAT_FULL_EDL.zip" 
-GOTO OPTIONS
-)
-:RESTOREB19CONT
-IF EXIST "%toolpath%\edl_packages\A2017U_B19-NOUGAT\A2017U_B19-NOUGAT_FULL_EDL\" GOTO MCHECK2
-echo.
-echo Extracting B19 package... 
-cd "%toolpath%\edl_packages\A2017U_B19-NOUGAT" 
-"%toolpath%\utils\7za" x A2017U_B19-NOUGAT_FULL_EDL.zip >nul 2>&1
-set errorcode=%ERRORLEVEL%
-IF NOT %errorcode% equ 0 (
-%popup% "Failed to extract package!\n7za error code: %errorcode%" "Error" "OK" "Error" >nul 2>&1
-GOTO OPTIONS
-)
-cd "%toolpath%"
-GOTO MCHECK2
-:RESTOREB10
-for /f "delims=" %%a in ('%popup% "This option will restore your device to stock OTA-capable B10. The toolkit will automatically download the B10 package if it does not exist in the toolkit." "Information" "OKCancel"') do set button=%%a
-if %button% equ cancel GOTO OPTIONS
-cls
-:B10CHECK
-IF EXIST "%toolpath%\edl_packages\A2017G_B10\A2017G_B10_FULL_EDL.zip" GOTO RESTOREB10CONT
-echo.
-echo Downloading B10 package...
-ping localhost -n 2 >nul
-cd "%toolpath%\stored"
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks A2017G_B10_FULL_EDL.zip') do (set filelink=%%a) 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum A2017G_B10_FULL_EDL.zip') do (set filesha256=%%a) 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes A2017G_B10_FULL_EDL.zip') do (set size=%%a)
-cd "%toolpath%"
-call :Downloader A2017G_B10_FULL_EDL.zip edl_packages\A2017G_B10 %filelink% %filesha256% %size% dependency
-IF "%ERRORLEVEL%" equ "1" (
-echo.
-echo Package download failed!
-ping localhost -n 2 >nul
-taskkill /F /IM wget.exe >nul 2>&1
-taskkill /F /IM sha256sum.exe >nul 2>&1
-IF EXIST "%toolpath%\edl_packages\A2017G_B10\A2017G_B10_FULL_EDL.zip" DEL "%toolpath%\edl_packages\A2017G_B10\A2017G_B10_FULL_EDL.zip"
-GOTO OPTIONS
-)
-:RESTOREB10CONT
-IF EXIST "%toolpath%\edl_packages\A2017G_B10\system.img" GOTO MCHECK2
-echo.
-echo Extracting B10 package...  
-cd "%toolpath%\edl_packages\A2017G_B10"
-"%toolpath%\utils\7za" x A2017G_B10_FULL_EDL.zip >nul 2>&1
-set errorcode=%ERRORLEVEL%
-IF NOT %errorcode% equ 0 (
-%popup% "Failed to extract package!\n7za error code: %errorcode%" "Error" "OK" "Error" >nul 2>&1
-GOTO OPTIONS
-)
-cd "%toolpath%"
 GOTO MCHECK2
 :acheck7
 echo.
@@ -780,7 +654,7 @@ echo Rebooting into EDL mode...
 echo.
 timeout /t 15
 echo.
-echo Checking EDL Connectivity... 
+echo Checking EDL Connectivity...
 :echeck7
 "%devcon%" rescan >nul 2>&1
 "%devcon%" hwids * | find /I "USB\VID_05C6&PID_9008" >nul 2>&1
@@ -814,10 +688,6 @@ echo Qualcomm HS-USB QDLoader 9008 device connected!
 :MISTART2
 for /f "delims=" %%a in ('%popup% "MiFlash will now be launched. Follow the instructions on the toolkit's screen." "Information" "OKCancel"') do set button=%%a
 if %button% equ cancel GOTO OPTIONS
-if "%variant%"=="A2017" echo %toolpath%\edl_packages\A2017G_B13|clip
-if "%variant%"=="A2017G" echo %toolpath%\edl_packages\A2017G_B10|clip
-if %package% equ 1 echo %toolpath%\edl_packages\A2017U_B15-NEW\A2017U_B15-NEW_FULL_EDL|clip
-if %package% equ 2 echo %toolpath%\edl_packages\A2017U_B19-NOUGAT\A2017U_B19-NOUGAT_FULL_EDL|clip
 start C:\XiaoMi\XiaoMiFlash\XiaoMiFlash.exe
 echo.
 echo =====================================================================================
@@ -859,28 +729,7 @@ for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum A201
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes A2017_B13_FULL_EDL.zip') do (set size=%%a)
 cd "%toolpath%"
 call :DOWNLOADER A2017_B13_FULL_EDL.zip edl_packages\A2017_B13 %filelink% %filesha256% %size% dependency
-IF "%ERRORLEVEL%" equ "1" (
-echo.
-echo Package download failed!
-ping localhost -n 2 >nul
-taskkill /F /IM wget.exe >nul 2>&1
-taskkill /F /IM sha256sum.exe >nul 2>&1
-IF EXIST "%toolpath%\edl_packages\A2017_B13\A2017_B13_FULL_EDL.zip" DEL "%toolpath%\edl_packages\A2017_B13\A2017_B13_FULL_EDL.zip"  
-GOTO OPTIONS
-)
-:RESTOREB13CONT
-IF EXIST "%toolpath%\miflash\B13\system.img" GOTO MCHECK2
-echo.
-echo Extracting B13 package... 
-cd "%toolpath%\edl_packages\A2017_B13" 
-"%toolpath%\utils\7za" x A2017_B13_FULL_EDL.zip >nul 2>&1
-set errorcode=%ERRORLEVEL%
-IF NOT %errorcode% equ 0 (
-%popup% "Failed to extract package!\n7za error code: %errorcode%" "Error" "OK" "Error" >nul 2>&1
-GOTO OPTIONS
-)
-cd "%toolpath%"
-GOTO MCHECK2
+IF "%ERRORLEVEL%" eq
 :ZIPFLASH
 if "%twrp_disable%"=="yes" (
 %popup% "Option is disabled due to missing twrp image." "Error" "OK" "Error" >nul 2>&1
