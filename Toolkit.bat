@@ -712,24 +712,9 @@ echo -Update your device's firmware if not the latest.
 echo =====================================================================================
 echo. 
 echo Press any key to return to options...
-pause >nul
 GOTO OPTIONS
-:RESTOREB13
-for /f "delims=" %%a in ('%popup% "This option will restore your device to stock OTA-capable B13. The toolkit will automatically download the B13 package if it does not exist in the toolkit." "Information" "OKCancel"') do set button=%%a
-if %button% equ cancel GOTO OPTIONS
 cls
-:B13CHECK
-IF EXIST "%toolpath%\edl_packages\A2017_B13\A2017_B13_FULL_EDL.zip" GOTO RESTOREB13CONT
-echo.
-echo Downloading B13 package...
-ping localhost -n 2 >nul
-cd "%toolpath%\stored"
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks A2017_B13_FULL_EDL.zip') do (set filelink=%%a) 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum A2017_B13_FULL_EDL.zip') do (set filesha256=%%a) 
-for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes A2017_B13_FULL_EDL.zip') do (set size=%%a)
-cd "%toolpath%"
-call :DOWNLOADER A2017_B13_FULL_EDL.zip edl_packages\A2017_B13 %filelink% %filesha256% %size% dependency
-IF "%ERRORLEVEL%" eq
+echo
 :ZIPFLASH
 if "%twrp_disable%"=="yes" (
 %popup% "Option is disabled due to missing twrp image." "Error" "OK" "Error" >nul 2>&1
@@ -750,7 +735,7 @@ GOTO SELECTZIP
 echo "%result%">>zips.txt
 :ANOTHERZIP
 echo.
-choice /c YN /m "Add another zip?"
+choice /c YN " Add another zip?"
 if %ERRORLEVEL% equ 1 GOTO SELECTZIP
 :acheck8
 echo.
