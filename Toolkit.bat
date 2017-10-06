@@ -1280,7 +1280,7 @@ if %button% equ no exit /b
 echo.
 echo Installing update...
 ping localhost -n 2 >nul
-"%toolpath%\updates\name" /SP- /SILENT /LOG="%toolpath%\updates\update.log" /CLOSEAPPLICATIONS /FORCECLOSEAPPNORESTART /NORESTART
+"%toolpath%\updates\%name%" /SP- /SILENT /LOG="%toolpath%\updates\update.log" /CLOSEAPPLICATIONS /FORCECLOSEAPPLICATIONS /NORESTART
 exit
 
 
