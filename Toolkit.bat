@@ -489,13 +489,13 @@ echo.
 echo Invalid option!
 GOTO ROOT_CHOICE
 :SUPERSU_ROOT_FILE_CHECK
-if "%supersu_root_disable"=="yes" (
+if "%supersu_root_disable%"=="yes" (
 %popup% "SuperSU root option is disabled due to missing SuperSU root file." "Error" "OK" "Error" >nul 2>&1
 GOTO ROOT_CHOICE
 )
 GOTO acheck6
 :MAG_ROOT_FILE_CHECK
-if "%magisk_root_disable"=="yes" (
+if "%magisk_root_disable%"=="yes" (
 %popup% "Magisk root option is disabled due to missing Magisk root file." "Error" "OK" "Error" >nul 2>&1
 GOTO ROOT_CHOICE
 )
@@ -572,7 +572,7 @@ if "%twrp_disable%"=="yes" (
 GOTO OPTIONS
 )
 if not exist "%toolpath%\root\boot.img" (
-%popup% "Boot image missing. Please place a boot.img from your device's zip into the 'root' folder and try again." "Error" "OK" "Error" >nul 2>&1
+%popup% "Boot image missing. Please place a boot.img from your ROM's full firmware zip into the  'root' folder and try again." "Error" "OK" "Error" >nul 2>&1
 GOTO OPTIONS
 )
 :unroot_acheck
@@ -628,6 +628,7 @@ echo Restoring boot image and unrooting...
 "%toolpath%\utils\adb" push "%toolpath%\root\boot.img" /sdcard/
 "%toolpath%\utils\adb" shell dd if=/sdcard/boot.img of=/dev/block/bootdevice/by-name/boot >nul 2>&1
 "%toolpath%\utils\adb" shell rm -f /sdcard/boot.img >nul 2>&1
+"%toolpath℅\utils\adb" reboot
 echo.
 echo Press any key to return to options...
 pause >nul
@@ -735,7 +736,7 @@ GOTO SELECTZIP
 echo "%result%">>zips.txt
 :ANOTHERZIP
 echo.
-choice /c YN " Add another zip?"
+choice /c YN /m "Add another zip?"
 if %ERRORLEVEL% equ 1 GOTO SELECTZIP
 :acheck8
 echo.
@@ -1149,7 +1150,7 @@ taskkill /F /IM fastboot.exe >nul 2>&1
 taskkill /F /IM wget.exe >nul 2>&1
 taskkill /F /IM Axon7Toolkit.exe >nul 2>&1
 taskkill /F /IM update.tmp.exe >nul 2>&1
-start "%toolpath%\unins000.exe"
+start "" "%toolpath%\unins000.exe"
 exit
 :CHANGELOG
 echo(
@@ -1226,7 +1227,7 @@ cd "%toolpath%"
 echo.
 echo Checking for toolkit update...
 ping localhost -n 2 >nul
-IF EXIST Toolkit.ini* DEL Toolkit.ini*
+IF EXIST Toolkit.ini DEL Toolkit.ini
 "%toolpath%\utils\wget" --quiet --no-check-certificate https://raw.githubusercontent.com/bennykor/Axon7Toolkit/master/Toolkit.ini
 IF NOT EXIST Toolkit.ini (
 echo.
@@ -1279,7 +1280,7 @@ if %button% equ no exit /b
 echo.
 echo Installing update...
 ping localhost -n 2 >nul
-start %MYFILES%\update.tmp.exe %name% %latest%
+" %toolpath%\updates
 exit
 
 
@@ -1385,7 +1386,7 @@ cd "%toolpath%"
 echo.
 echo Checking if all needed files are present and up to date...
 ping localhost -n 2 >nul
-IF EXIST LatestFileDependencies.ini* DEL /F LatestFileDependencies.ini*
+IF EXIST LatestFileDependencies.ini DEL /F LatestFileDependencies.ini
 "%toolpath%\utils\wget" --quiet --no-check-certificate https://raw.githubusercontent.com/bennykor/Axon7Toolkit/master/LatestFileDependencies.ini
 IF NOT EXIST LatestFileDependencies.ini (
 echo.
