@@ -745,9 +745,10 @@ if %ERRORLEVEL% equ 1 (
 echo. 
 echo Wiping...
 echo.
-"%toolpath%\utils\adb" shell twrp mount system >nul 2>&1
-"%toolpath%\utils\adb" shell twrp wipe system
-"%toolpath%\utils\adb" shell twrp wipe data
+"%toolpath%\utils\adb" shell busybox mount /system >nul 2>&1
+"%toolpath%\utils\adb" shell twrp wipe system >nul 2>&1
+"%toolpath%\utils\adb" shell make_ext4fs /dev/block/bootdevice/by-name/userdata >nul 2>&1
+"%toolpath%\utils\adb" shell busybox mount -o bind /data/media/0 /sdcard >nul 2>&1
 )
 :ZIPCONT
 echo.
@@ -981,7 +982,7 @@ echo.
 echo ADB recovery device connected! 
 echo.
 echo Mounting system...
-"%toolpath%\utils\adb" shell twrp mount system >nul 2>&1
+"%toolpath%\utils\adb" shell busybox /mount system >nul 2>&1
 echo.
 echo Renaming files...
 "%toolpath%\utils\adb" shell mv "/system/recovery-from-boot.p" "/system/recovery-from-boot.p.bak" >nul 2>&1
