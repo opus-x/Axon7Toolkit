@@ -192,18 +192,17 @@ echo 8. LOCK BOOTLOADER
 echo 9. FLASH TWRP
 echo 10. ROOT
 echo 11. UNROOT
-echo 12. RESTORE TO STOCK/RECOVER FROM HARDBRICK (EDL)
-echo 13. FLASH ZIPS
-echo 14. SETTINGS
-echo 15. FAQ AND TROUBLESHOOTING
-echo 16. DONATE
+echo 12. FLASH ZIPS
+echo 13. SETTINGS
+echo 14. FAQ AND TROUBLESHOOTING
+echo 15. DONATE
 IF NOT EXIST "%toolpath%\stored\debuggingprompt.txt" (
 %popup% "Make sure USB debugging is enabled on your device before choosing any of the options:\n\n1-Open the Settings app. Go down to About Phone and select it.\n\n2-Go down to build number. Quickly tap it 7 times to enable developer options.\n\n3-Go back to the main Settings screen (or the Advanced Options menu on Nougat) and go into developer options.\n\n4-Turn on 'USB debugging' and 'OEM Unlock'." "Information" "OK" "Warning" >nul 2>&1 
 type nul >%toolpath%\stored\debuggingprompt.txt
 )
 echo.
 set option=
-set /p "option=Choose an option(1-16):"
+set /p "option=Choose an option(1-15):"
 if "%option%"=="1" (GOTO DVINSTALL)
 if "%option%"=="2" (GOTO TEST)
 if "%option%"=="3" (GOTO BACKUP)
@@ -215,11 +214,10 @@ if "%option%"=="8" (GOTO LOCK)
 if "%option%"=="9" (GOTO TWRPFLASH) 
 if "%option%"=="10" (GOTO ROOT)
 if "%option%"=="11" (GOTO UNROOT)
-if "%option%"=="12" (GOTO STOCKRESTORE)
-if "%option%"=="13" (GOTO ZIPFLASH)
-if "%option%"=="14" (GOTO SOPTIONS)
-if "%option%"=="15" (start "" "https://forum.xda-developers.com/showpost.php?p=71430637&postcount=2") & (GOTO OPTIONS)
-if "%option%"=="16" (start "" "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ZW4F4MN9JSD2S&lc=US&item_name=bkores&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted") & (GOTO OPTIONS)
+if "%option%"=="12" (GOTO ZIPFLASH)
+if "%option%"=="13" (GOTO SOPTIONS)
+if "%option%"=="14" (start "" "https://forum.xda-developers.com/showpost.php?p=71430637&postcount=2") & (GOTO OPTIONS)
+if "%option%"=="15" (start "" "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ZW4F4MN9JSD2S&lc=US&item_name=bkores&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted") & (GOTO OPTIONS)
 echo.
 echo Invalid option!
 ping localhost -n 2 >nul
@@ -670,89 +668,6 @@ echo.
 echo Press any key to return to options...
 pause >nul
 GOTO OPTIONS
-:STOCKRESTORE
-cls
-:MCHECK2
-IF EXIST C:\XiaoMi\XiaoMiFlash\ GOTO acheck7
-for /f "delims=" %%a in ('%popup% "MiFlash version 20161222 is not installed on your system. This is required for the restore stock function of the toolkit to work. Please go through the setup. It's all in Chinese, but just keep clicking the next button at the bottom right." "Information" "OKCancel"') do set button=%%a
-if %button% equ cancel GOTO OPTIONS
-start "" "%toolpath\MiFlashSetup.msi"
-pause
-GOTO MCHECK2
-:acheck7
-echo.
-echo Checking ADB\EDL Connectivity...
-"%toolpath%\utils\adb" devices | findstr "\<device\>" >nul 2>&1
-IF "%ERRORLEVEL%" equ "1" GOTO echeck7
-echo.
-echo ADB device connected!
-echo.
-echo Rebooting into EDL mode...
-"%toolpath%\utils\adb" reboot edl
-echo.
-timeout /t 15
-echo.
-echo Checking EDL Connectivity...
-:echeck7
-"%devcon%" rescan >nul 2>&1
-"%devcon%" hwids * | find /I "USB\VID_05C6&PID_9008" >nul 2>&1
-IF "%ERRORLEVEL%" equ "0" (
-echo.
-echo EDL device connected!
-GOTO QDVCHECK2
-)
-For /f "delims=" %%a in ('%popup% "EDL device is not connected!\n\nTroubleshooting:\n\n-Try an alternate USB 2.0 port. Use the original OEM cable for best results.\n\n-Use the install driver option\n\nBoot your device into EDL mode manually:\n\n-From the power menu, completely power off your device.Then press and hold the Volume Up+Volume Down+Power keys for 5 seconds.\n\n-Reboot your PC.\n\nPress 'OK' to retry.\n\nPress 'Cancel' to return to options." "Error" "OKCancel" "Stop"') do set button=%%a
-If %button% equ cancel (GOTO OPTIONS) else (GOTO acheck7)
-:QDVCHECK2
-echo.
-echo Searching for Qualcomm HS-USB QDLoader 9008 device...
-"%devcon%" rescan >nul 2>&1
-"%devcon%" find * | findstr "\<Qualcomm HS-USB QDLoader 9008\>" >nul 2>&1
-IF "%ERRORLEVEL%" equ "0" GOTO QDCONNECTED2
-echo.
-echo Not found! Replacing driver... 
-"%devcon%" update "%toolpath%\drivers\Qualcomm\qcser.inf" "USB\VID_05C6&PID_9008" >nul 2>&1
-IF "%ERRORLEVEL%" equ "2" (
-%popup% "Failed to replace driver! Check C:\Windows\Inf\setupapi.dev.log for details." "Error" "OK" "Error" >nul 2>&1
-GOTO OPTIONS
-)
-echo.
-echo Driver replaced successfully!
-%popup% "Please press the power button for 10-15 seconds to reboot your device or Power+Volume Up+Volume Down for 5 seconds to boot back into EDL mode to refresh the EDL state. Then use the option again." "Information" >nul 2>&1
-GOTO OPTIONS
-:QDCONNECTED2
-echo.
-echo Qualcomm HS-USB QDLoader 9008 device connected! 
-:MISTART2
-for /f "delims=" %%a in ('%popup% "MiFlash will now be launched. Follow the instructions on the toolkit's screen." "Information" "OKCancel"') do set button=%%a
-if %button% equ cancel GOTO OPTIONS
-start C:\XiaoMi\XiaoMiFlash\XiaoMiFlash.exe
-echo.
-echo =====================================================================================
-echo							INSTRUCTIONS
-echo =====================================================================================
-echo 1) The path to the package that needs to be flashed has been copied to your clipboard. 
-echo Paste it into the text field at the top by clicking it and then press Cltrl+V on your keyboard.
-echo Ignore the "couldn't find script" error.
-echo ***You may need to click 'Refresh' before your device is seen in MiFlash.***
-echo 2) Press the flash button at the top right and wait for the package to flash.
-echo 3) Press and hold the power button for 10-15 seconds to exit out of EDL mode.
-echo.
-echo If the flash fails or is unable to communicate with the device try one of the following:
-echo -Use the Power, Volume Up and Volume Down key combo to restart EDL mode. 
-echo -Release the keys after 5 seconds then wait another 5 seconds before using the refresh or 
-echo flash buttons on MiFlash.
-echo -You can also try the Reinstall option under Driver at the top left.
-echo -Reboot your PC
-echo -Restart MiFlash
-echo -Try an earlier or later version of MiFlash at xiaomiflashtool.com
-echo -Update your device's firmware if not the latest.
-echo =====================================================================================
-echo. 
-echo Press any key to return to options...
-GOTO OPTIONS
-cls
-echo
 :ZIPFLASH
 if "%twrp_disable%"=="yes" (
 %popup% "Option is disabled due to missing twrp image." "Error" "OK" "Error" >nul 2>&1
