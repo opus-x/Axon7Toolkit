@@ -155,6 +155,18 @@ IF NOT EXIST "%toolpath%\root\%magversion%" (
 set magisk_root_disable=yes
 %popup% "Magisk root file '%magversion%' is missing. Magisk root option is disabled." "Information" "OK" "Warning" >nul 2>&1
 )
+set supersu_unroot_disable=
+for /f "delims=" %a in ('call ini.cmd LatestFileDependencies.ini LatestSuperSU_unins supersu_unins') do (set s_uninsversion=%%a)
+IF NOT EXIST "%toolpath%\root\%s_uninsversion" (
+set supersu_unroot_disable=yes
+%popup% "SuperSU unroot file '%s_suninsversion%' is missing. SuperSU unroot option is disabled." "Information" "OK" "Warning" >nul 2>&1
+)
+set magisk_unroot_disable=
+for /f "delims=" %a in ('call ini.cmd LatestFileDependencies.ini LatestMagisk_unins magisk_unins') do (set mag_uninsversion=%%a)
+IF NOT EXIST "%toolpath%\root\%mag_uninsversion" (
+set magisk_unroot_disable=yes
+%popup% "Magisk unroot file '%mag_uninsversion%' is missing. Magisk unroot option is disabled." "Information" "OK" "Warning" >nul 2>&1
+)
 cd "%toolpath%"
 cls
 echo ======================================================================================    			
@@ -572,8 +584,21 @@ if "%twrp_disable%"=="yes" (
 GOTO OPTIONS
 )
 if not exist "%toolpath%\root\boot.img" (
-%popup% "Boot image missing. Please place a boot.img from your ROM's full firmware zip into the  'root' folder and try again." "Error" "OK" "Error" >nul 2>&1
-GOTO OPTIONS
+%popup% "Boot image missing. Unroot may not fully complete. Information "OK" "Warning" >nul 2>&1
+)
+:UNROOT_CHOICE
+choice /c 12 /m "Did you root with [1]SuperSU or [2]Magisk?"
+if "%errorlevel%" equ "1" set unroot_choice=supersu & GOTO supersu_unroot_file_check
+if "%errorlevel%" equ "2" set unroot_choice=magisk & GOTO magisk_unroot_file_check
+:supersu_unroot_file_check
+if "%supersu_unroot_disable%"=="yes" (
+%popup% "SuperSU unroot file is missing. Option is disabled." >nul 2>&1
+GOTO UNROOT_CHOICE
+)
+:magisk_unroot_file_check
+if "%magisk_root_disable%"=="yes" (
+%popup% "Magisk unroot file is missing. Option is disabled." >nul 2>&1
+GOTO UNROOT_CHOICE
 )
 :unroot_acheck
 echo.
@@ -624,10 +649,22 @@ if %button% equ cancel (GOTO OPTIONS) else (GOTO unroot_acheckb)
 echo.
 echo ADB recovery device connected!
 echo.
-echo Restoring boot image and unrooting...
+echo Unrooting...
+if "%unroot_choice%=="supersu" (
+"%toolpath%\utils\adb" push "%toolpath%\root\%s_uninsversion%" /sdcard/
+"%toolpath%\utils\adb" shell twrp install /sdcard/%s_uninsversion >nul 2>&1
+)
+if "%unroot_choice%"=="magisk" (
+"%toolpath%\utils\adb" push "%toolpath%\root\%mag_uninsversion%" /sdcard/
+"%toolpath%\utils\adb" shell twrp install /sdcard/%mag_uninsversion >nul 2>&1
+)
+if exist "%toolpath%\root\boot.img" (
+echo.
+echo Restoring boot image...
 "%toolpath%\utils\adb" push "%toolpath%\root\boot.img" /sdcard/
 "%toolpath%\utils\adb" shell dd if=/sdcard/boot.img of=/dev/block/bootdevice/by-name/boot >nul 2>&1
 "%toolpath%\utils\adb" shell rm -f /sdcard/boot.img >nul 2>&1
+)
 "%toolpath℅\utils\adb" reboot
 echo.
 echo Press any key to return to options...
@@ -1445,7 +1482,7 @@ for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks 
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini FileDirectories %filename%') do (set directory=%%a) 
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum %filename%') do (set sha256sum=%%a) 
 for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes %filename%') do (set size=%%a)
-IF EXIST "%toolpath%\%directory%\%filename%" exit /b
+IF EXIST "%toolpath%\%directory%\%filename%" GOTO SUPERSU_UNINS
 echo.
 echo Downloading Magisk root file...
 ping localhost -n 2 >nul
@@ -1460,4 +1497,47 @@ IF EXIST "%toolpath%\%directory%\%filename%" DEL /F "%toolpath%\%directory%\%fil
 ping localhost -n 2 >nul
 exit /b
 )
-
+:SUPERSU_UNINS
+cd "%toolpath%\stored"
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini LatestSuperSU_unins supersu_unins') do (set filename=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks %filename%') do (set filelink=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini FileDirectories %filename%') do (set directory=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum %filename%') do (set sha256sum=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes %filename%') do (set size=%%a)
+IF EXIST "%toolpath%\%directory%\%filename%" GOTO MAGISK_UNINS
+echo.
+echo Downloading SuperSU unroot file...
+ping localhost -n 2 >nul
+call :DOWNLOADER %filename% %directory% %filelink% %sha256sum% %size% dependency
+IF "%ERRORLEVEL%" equ "1" (
+echo.
+echo Failed to download SuperSU unroot file!
+taskkill /F /IM wget.exe >nul 2>&1
+taskkill /F /IM md5sum.exe >nul 2>&1
+taskkill /F /IM sha256sum.exe >nul 2>&1
+IF EXIST "%toolpath%\%directory%\%filename%" DEL /F "%toolpath%\%directory%\%filename%"
+ping localhost -n 2 >nul
+exit /b
+)
+:MAGISK_UNINS
+cd "%toolpath%\stored"
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini LatestMagisk_unins magisk_unins') do (set filename=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini DownloadLinks %filename%') do (set filelink=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini FileDirectories %filename%') do (set directory=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sha256sum %filename%') do (set sha256sum=%%a) 
+for /f "delims=" %%a in ('call ini.cmd LatestFileDependencies.ini sizes %filename%') do (set size=%%a)
+IF EXIST "%toolpath%\%directory%\%filename%" exit /b
+echo.
+echo Downloading Magisk unroot file...
+ping localhost -n 2 >nul
+call :DOWNLOADER %filename% %directory% %filelink% %sha256sum% %size% dependency
+IF "%ERRORLEVEL%" equ "1" (
+echo.
+echo Failed to download Magisk unroot file!
+taskkill /F /IM wget.exe >nul 2>&1
+taskkill /F /IM md5sum.exe >nul 2>&1
+taskkill /F /IM sha256sum.exe >nul 2>&1
+IF EXIST "%toolpath%\%directory%\%filename%" DEL /F "%toolpath%\%directory%\%filename%"
+ping localhost -n 2 >nul
+exit /b
+)
