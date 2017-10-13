@@ -726,7 +726,7 @@ echo Booting TWRP...
 echo.
 "%toolpath%\utils\fastboot" boot "%toolpath%\twrp\%tversion%"
 echo.
-echo Tap 'Keep read-only' on startup!
+echo Swipe to allow modifications on startup!
 echo Press any key to continue once TWRP has fully loaded...
 pause >nul
 :acheck8b
@@ -745,6 +745,7 @@ if %ERRORLEVEL% equ 1 (
 echo. 
 echo Wiping...
 echo.
+"%toolpath%\utils\adb" shell twrp mount system >nul 2>&1
 "%toolpath%\utils\adb" shell twrp wipe system
 "%toolpath%\utils\adb" shell twrp wipe data
 )
