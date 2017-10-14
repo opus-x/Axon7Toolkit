@@ -842,7 +842,7 @@ echo.
 echo ADB recovery device connected! 
 echo.
 echo Backing up partitions... ("%result%")
-"%toolpath%\utils\adb" shell twrp mount system >nul 2>&1
+"%toolpath%\utils\adb" shell busybox mount /system >nul 2>&1
 "%toolpath%\utils\adb" backup -f "%result%" --twrp %compress% %system% %data% %boot%  >nul 2>&1
 "%toolpath%\utils\adb" shell twrp unmount system >nul 2>&1
 "%toolpath%\utils\adb" reboot
@@ -916,9 +916,8 @@ echo.
 echo ADB Recovery device connected! 
 echo. 
 echo Restoring backup... ("%result%")
-"%toolpath%\utils\adb" shell twrp mount system >nul 2>&1
+"%toolpath%\utils\adb" shell busybox mount system >nul 2>&1
 "%toolpath%\utils\adb" restore "%result%" >nul 2>&1
-"%toolpath%\utils\adb" shell twrp unmount system >nul 2>&1
 "%toolpath%\utils\adb" reboot
 %popup% "Your backup '%result%' should have successfully been restored. If there were any restore errors please pull your device's recovery log with 'adb pull /tmp/recovery.log' and send it to the developer." "Information" >nul 2>&1
 GOTO OPTIONS
