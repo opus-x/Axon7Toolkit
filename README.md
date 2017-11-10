@@ -24,12 +24,3 @@ The toolkit also downloads any dependencies that are needed such as TWRP Recover
 The toolkit supports ALL variants and ALL builds!
 
 This toolkit is constantly updated with new features and bug fixes! Why are you still reading this? Check out the toolkit!
-
-
-SOURCE
-
-I have made the source of the main Toolkit available. It is for EDUCATIONAL PURPOSES ONLY! You may not use it in any way or redestribute it as your own!
-
-LENDING ME SERVER SPACE
-
-If you are interested in lending me server space to host the files for the toolkit(thank you!) send me a PM on xda. My username is @bkores.
